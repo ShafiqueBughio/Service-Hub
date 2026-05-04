@@ -44,3 +44,8 @@ body {
   }
 
 }
+
+@theme {
+  --color-primary: #027D8C;
+  --color-secondary: : #037987;
+}

@@ -47,5 +47,10 @@ body {
 
 @theme {
   --color-primary: #027D8C;
-  --color-secondary: : #037987;
+  --color-secondary: #037987;
+  --font-schibsted: var(--font-schibsted);
+}
+
+@utility bg-primary-gradient {
+  background: linear-gradient(0deg, #027D8C -8%, #A2E6E1 107%);
 }

@@ -1,10 +1,11 @@
-import {Inter} from "next/font/google"
+import { Schibsted_Grotesk } from "next/font/google"
 import "../style/globals.css";
 import "../style/custom.css";
 
-const inter = Inter({
+const schibstedGrotesk = Schibsted_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-schibsted",
 });
 
 export const metadata = {
@@ -15,9 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={inter.className}
-      >
+      <body className={`${schibstedGrotesk.variable} font-schibsted`}>
         {children}
       </body>
     </html>

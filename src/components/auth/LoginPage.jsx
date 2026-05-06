@@ -4,7 +4,6 @@ import { GoLink } from 'react-icons/go';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/lib/store/store';
 import Input from '../ui/Input';
-import { useForm } from 'react-hook-form';
 import { MdOutlineEmail } from "react-icons/md";
 import InputPassword from '../ui/InputPassword';
 import Checkbox from '../ui/Checkbox';
@@ -13,24 +12,17 @@ import Divider from '../ui/Divider';
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import Link from 'next/link';
-import { yupResolver } from "@hookform/resolvers/yup";
-import { loginSchema } from '@/lib/validation';
 
-const LoginPage = () => {
+
+const LoginPage = ({register,errors,handleSubmit,handleLogin}) => {
   const router = useRouter();
   const role = useAuthStore((state) => state.role);
 
   const SignOptions = [{id:1,title : "Sign in Apple",icon:<FaApple size={20}/>},{id:1,title : "Sign in Google",icon:<FcGoogle size={20}/>}]
 
-  const {register,handleSubmit,formState:{errors},reset} = useForm({resolver:yupResolver(loginSchema)});
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // handle login logic here
-  };
 
   return (
-    <div className='w-full max-w-lg flex flex-col gap-6'>
+    <div className='w-full min-h-screen max-w-lg flex flex-col gap-6 pt-20 pb-4 overflow-hidden'>
 
       {/* mobile branding — only visible on small screens */}
       <div className='flex md:hidden gap-1 items-center justify-center mb-2'>
@@ -46,7 +38,7 @@ const LoginPage = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(handleLogin)} className='flex flex-col gap-4 max-h-[310px] overflow-y-auto'>
+      <form onSubmit={handleSubmit(handleLogin)} className='flex flex-col gap-4 h-[300px] overflow-y-auto'>
         <Input
         label={"Email"}
         name={"email"}
@@ -86,7 +78,7 @@ const LoginPage = () => {
        
       {
         SignOptions.map((opt,idx)=>(
-        <div key={idx} className='w-40 p-2 flex gap-2 items-center justify-center cursor-pointer border border-gray-400 rounded-full'>
+        <div key={idx} className='w-40 p-2 flex lg:gap-2 gap-0 items-center justify-center cursor-pointer border border-gray-400 rounded-full'>
         {opt.icon}
         <p>{opt.title}</p>
       </div>
@@ -102,11 +94,15 @@ const LoginPage = () => {
           Sign Up Now
         </Link>
 
-        <div className='w-full flex flex-col justify-center items-center'>
+        <div className='mt-auto w-full flex flex-col justify-center items-center'>
       <p>By signing-in, you agree to our</p>
       <p>
-        <span className='font-semibold cursor-pointer'>Terms & Conditions</span> | 
-        <span className='font-semibold cursor-pointer'> Privacy Policy</span>
+        <span className='font-semibold cursor-pointer'
+        onClick={()=>router.push("/agreements?active=terms")}
+        >Terms & Conditions</span> | 
+        <span className='font-semibold cursor-pointer'
+        onClick={()=>router.push("/agreements?active=policy")}
+        > Privacy Policy</span>
       </p>
         </div>
 

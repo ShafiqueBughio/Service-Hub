@@ -23,7 +23,7 @@ export default function SplitLayout({ children }) {
       </div>
 
       {/* Right Side — page content (form) */}
-      <div className='w-full md:w-1/2 h-full flex flex-col justify-center items-center px-8 md:px-16'>
+      <div className='w-full md:w-1/2 h-full flex flex-col justify-center items-center px-8'>
         {children}
       </div>
 

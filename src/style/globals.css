@@ -48,6 +48,7 @@ body {
 @theme {
   --color-primary: #027D8C;
   --color-secondary: #037987;
+  --color-tertiary:#6F96AB
   --font-schibsted: var(--font-schibsted);
 }
 

@@ -46,7 +46,7 @@ const Agreements = ({ active = 'terms' }) => {
   },[active])
 
   return (
-    <div className='w-full  bg-blue-50 rounded-2xl flex flex-col overflow-hidden'>
+    <div className='w-full flex-1 min-h-0 bg-blue-50 rounded-2xl flex flex-col overflow-hidden'>
 
       {/* Tab Header */}
       <div className='flex border-b border-gray-200 bg-blue-50'>
@@ -66,7 +66,7 @@ const Agreements = ({ active = 'terms' }) => {
       </div>
 
       {/* Scrollable Content */}
-      <div className='flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5'>
+      <div className='h-auto overflow-y-auto px-5 py-5 flex flex-col gap-5'>
         {CONTENT[activeTab].map((section, idx) => (
           <div key={idx} className='flex flex-col gap-2'>
             {section.heading && (

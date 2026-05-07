@@ -55,3 +55,17 @@ body {
 @utility bg-primary-gradient {
   background: linear-gradient(0deg, #027D8C -8%, #A2E6E1 107%);
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-5px); }
+  60%       { transform: translateX(5px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
+}
+
+.shake {
+  animation: shake 0.5s ease;
+}

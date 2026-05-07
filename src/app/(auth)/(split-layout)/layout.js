@@ -1,6 +1,5 @@
 import Heading from '@/components/general/Heading';
 import Image from 'next/image';
-import { GoLink } from 'react-icons/go';
 
 export default function SplitLayout({ children }) {
   return (
@@ -23,7 +22,7 @@ export default function SplitLayout({ children }) {
       </div>
 
       {/* Right Side — page content (form) */}
-      <div className='w-full md:w-1/2 h-full flex flex-col justify-center items-center px-8'>
+      <div className='w-full md:w-1/2 h-full flex flex-col items-center overflow-hidden'>
         {children}
       </div>
 

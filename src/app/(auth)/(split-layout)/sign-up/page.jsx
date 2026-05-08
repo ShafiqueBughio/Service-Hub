@@ -12,7 +12,7 @@ const page = () => {
   const [agreed, setAgreed] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, submitCount } } = useForm({
+  const { register, handleSubmit, formState: { errors, submitCount,isSubmitting } } = useForm({
     resolver: yupResolver(signUpSchema),
     defaultValues: {
       email: '',
@@ -23,14 +23,19 @@ const page = () => {
 
   const router = useRouter();
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     if (!agreed) {
       setShowTermsError(true);
       return;
     }
+    try {
+     await new Promise((resolve) => setTimeout(resolve, 1000));
     setShowTermsError(false);
     console.log({ ...data, agreeToTerms: true });
     router.push("/verification")
+    } catch (error) {
+      console.log(error);
+    }
     // handle sign up API call here
   };
 
@@ -50,6 +55,8 @@ const page = () => {
         agreed={agreed}
         setAgreed={setAgreed}
         showTermsError={showTermsError}
+        isSubmitting = {isSubmitting}
+        
       />
     </>
   );

@@ -4,12 +4,12 @@ import React from 'react'
 import { IoIosArrowBack } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 
-const Title = ({ title }) => {
+const Title = ({ title,className }) => {
 
   const router = useRouter();
 
   return (
-    <div className='w-full flex items-center'>
+    <div className={`flex gap-6 items-center  ${className}`}>
 
       <div
         onClick={() => router.back()}
@@ -18,7 +18,7 @@ const Title = ({ title }) => {
         <IoIosArrowBack size={22} />
       </div>
 
-      <h1 className='mx-auto'>{title}</h1>
+      <h1 className='text-center'>{title}</h1>
     </div>
   )
 }

@@ -69,3 +69,41 @@ body {
 .shake {
   animation: shake 0.5s ease;
 }
+
+
+/* Phone Input Custom Styles */
+.phone-input-custom .PhoneInputInput {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.phone-input-custom .PhoneInputInput:focus {
+  border-color: #027D8C;
+}
+
+.phone-input-custom .PhoneInputCountry {
+  margin-right: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+}
+
+.phone-input-custom .PhoneInputCountryIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.125rem;
+  overflow: hidden;
+}
+
+.phone-input-custom .PhoneInputCountrySelectArrow {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: 0.25rem;
+  color: #6b7280;
+}

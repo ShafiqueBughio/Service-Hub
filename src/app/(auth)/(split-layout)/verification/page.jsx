@@ -11,6 +11,7 @@ const page = () => {
 
   const handleVerify = (otp) => {
     console.log('OTP submitted:', otp);
+    router.push("/create-profile")
     // handle verification API call here
   };
 

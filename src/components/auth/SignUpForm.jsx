@@ -15,6 +15,7 @@ const SignUpForm = ({
   agreed,
   setAgreed,
   showTermsError,
+  isSubmitting
 }) => {
   const termsRef = useRef(null);
 
@@ -97,7 +98,7 @@ const SignUpForm = ({
       </div>
 
       {/* Submit */}
-      <Button text='Sign up' />
+      <Button text={isSubmitting?"Signing Up":"Sign Up"} isSubmitting={isSubmitting} />
     </form>
   );
 };

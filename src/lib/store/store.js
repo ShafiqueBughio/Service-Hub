@@ -9,7 +9,7 @@ const useAuthStore = create(
       clearRole: () => set({ role: null }),
     }),
     {
-      name: 'auth-store', // localStorage key
+      name: 'auth-store',
     }
   )
 );

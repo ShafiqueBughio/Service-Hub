@@ -22,14 +22,6 @@ const page = () => {
 
   const content = (
     <>
-      <div className='flex flex-col gap-2'>
-        <h1 className='font-bold uppercase'>Verification Code</h1>
-        <p className='text-gray-500 text-sm leading-6'>
-          We&apos;ve sent you an email containing a 6-digit verification
-          code. Please enter the code below to verify your identity.
-        </p>
-      </div>
-
       <VerificationForm onSubmit={handleVerify} onResend={handleResend} />
     </>
   );
@@ -39,6 +31,13 @@ const page = () => {
       {/* ── MOBILE ── */}
       <MobileAuthLayout>
         <div className='flex-1 flex flex-col gap-8 min-h-0'>
+                <div className='flex flex-col gap-2'>
+        <h1 className='font-bold uppercase'>Verification Code</h1>
+        <p className='text-gray-500 text-sm leading-6'>
+          We&apos;ve sent you an email containing a 6-digit verification
+          code. Please enter the code below to verify your identity.
+        </p>
+      </div>
           {content}
         </div>
       </MobileAuthLayout>
@@ -47,8 +46,12 @@ const page = () => {
       <div className='hidden md:flex w-full h-full flex-col px-12 py-10 overflow-y-auto'>
 
         {/* back + title row */}
-        <div className='flex items-center gap-3 shrink-0'>
-          <Title />
+        <div className='flex flex-col  gap-4 '>
+          <Title title={"VERIFICATION CODE"}/>
+           <p className='text-gray-500 text-sm leading-6'>
+          We&apos;ve sent you an email containing a 6-digit verification
+          code. Please enter the code below to verify your identity.
+        </p>
         </div>
 
         <div className='my-auto w-full flex flex-col items-center  gap-8 '>

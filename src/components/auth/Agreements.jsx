@@ -21,7 +21,7 @@ const CONTENT = {
   policy: [
     {
       heading: null,
-      body: `This Privacy Policy describes how Service Link collects, uses, and shares information about you when you use our services. We are committed to protecting your personal data and your right to privacy. If you have any questions or concerns about this policy, please contact us.`,
+      body: `This Privacy Policy describes how Service Hub collects, uses, and shares information about you when you use our services. We are committed to protecting your personal data and your right to privacy. If you have any questions or concerns about this policy, please contact us.`,
     },
     {
       heading: 'Information We Collect.',

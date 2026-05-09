@@ -81,3 +81,21 @@ export const contractorStep3Schema = yup.object({
     .min(1, 'Please upload at least one portfolio image')
     .required('Portfolio images are required'),
 });
+
+export const forgotPasswordSchema = yup.object({
+  email: yup
+    .string()
+    .email("Enter a valid email")
+    .required("Email is required"),
+});
+
+export const resetPasswordSchema = yup.object({
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("New password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords do not match")
+    .required("Please confirm your password"),
+});

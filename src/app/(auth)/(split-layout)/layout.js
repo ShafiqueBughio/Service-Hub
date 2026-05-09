@@ -18,7 +18,7 @@ export default function SplitLayout({ children }) {
         <div className='absolute inset-0' />
 
         {/* branding */}
-        <Heading description={"Connecting users with the right professionals"}/>
+        <Heading description={"Connecting users with the right professionals"} />
       </div>
 
       {/* Right Side — page content (form) */}

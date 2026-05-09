@@ -32,7 +32,7 @@ const MobileAuthLayout = ({ children }) => {
         <div className='relative z-10 flex items-center gap-1'>
           <h1 className='text-primary tracking-widest uppercase'>Service</h1>
           <GoLink size={26} className='text-primary' />
-          <h1 className='text-primary tracking-widest uppercase'>Link</h1>
+          <h1 className='text-primary tracking-widest uppercase'>Hub</h1>
         </div>
       </div>
 

@@ -74,14 +74,14 @@ const SignUpForm = ({
         />
         <label
           htmlFor='agreeToTerms'
-          className='text-sm text-gray-700 leading-5 cursor-pointer select-none'
+          className='text-sm text-gray-700 leading-5 cursor-pointer select-none md:text-sm text-xs'
         >
           I agree with the{' '}
           <span ref={termsRef} className='inline-block'>
             <Link
               href='/agreements?active=terms'
               onClick={(e) => e.stopPropagation()}
-              className='text-primary underline font-medium'
+              className='text-primary underline font-medium md:text-sm text-xs'
             >
               Terms &amp; Conditions
             </Link>
@@ -89,7 +89,7 @@ const SignUpForm = ({
             <Link
               href='/agreements?active=privacy'
               onClick={(e) => e.stopPropagation()}
-              className='text-primary underline font-medium'
+              className='text-primary underline font-medium md:text-sm text-xs'
             >
               Privacy Policy
             </Link>

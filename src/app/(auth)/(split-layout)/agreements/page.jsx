@@ -22,7 +22,7 @@ const page = () => {
       <div className='hidden md:flex w-full h-full flex-col gap-4 px-12 py-10 min-h-0'>
         <Title title={"Agreements"}/>
         <div className='flex-1 min-h-0 flex flex-col'>
-          <Agreements active={activeTab} />
+          <Agreements active={activeTab}/>
         </div>
       </div>
     </>

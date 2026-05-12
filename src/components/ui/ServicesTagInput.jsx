@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import { IoAdd } from 'react-icons/io5';
 
 const ServicesTagInput = ({ value = [], onChange, error }) => {
   const [input, setInput] = useState('');
@@ -25,17 +26,28 @@ const ServicesTagInput = ({ value = [], onChange, error }) => {
   return (
     <div className='flex flex-col gap-2'>
       <label className='text-sm font-medium text-gray-700'>Services</label>
-      <input
-        type='text'
-        placeholder='Enter Services'
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={addService}
-        className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none transition-colors
-          ${error ? 'border-red-400' : 'border-gray-300 focus:border-primary'}
-        `}
-      />
+
+      {/* input + add button */}
+      <div className='flex items-center gap-2'>
+        <input
+          type='text'
+          placeholder='Enter Services'
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className={`flex-1 border rounded-lg px-4 py-2.5 text-sm outline-none transition-colors
+            ${error ? 'border-red-400' : 'border-gray-300 focus:border-primary'}
+          `}
+        />
+        <button
+          type='button'
+          onClick={addService}
+          className='w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/80 transition-colors'
+        >
+          <IoAdd size={20} />
+        </button>
+      </div>
+
       {/* tags */}
       {value.length > 0 && (
         <div className='flex flex-wrap gap-2'>
@@ -48,7 +60,7 @@ const ServicesTagInput = ({ value = [], onChange, error }) => {
               <button
                 type='button'
                 onClick={() => removeService(tag)}
-                className='text-red-400 hover:text-red-600 font-bold leading-none'
+                className='text-red-400 hover:text-red-600 font-bold leading-none ml-1'
               >
                 ×
               </button>
@@ -56,6 +68,7 @@ const ServicesTagInput = ({ value = [], onChange, error }) => {
           ))}
         </div>
       )}
+
       {error && <p className='text-red-500 text-sm'>{error}</p>}
     </div>
   );

@@ -5,13 +5,25 @@ import { IoIosArrowBack } from 'react-icons/io';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import VerificationForm from '@/components/auth/verification/VerificationForm';
 import Title from '@/components/general/Title';
+import useAuthStore from '@/lib/store/store';
 
 const page = () => {
   const router = useRouter();
+  const identifier = useAuthStore((state) => state.identifier);
 
-  const handleVerify = (otp) => {
-    console.log('OTP submitted:', otp);
-    router.push("/create-profile")
+  const handleVerify = async(otp) => {
+    try {
+      const payload = {
+        identifier: identifier,
+        otp: otp,
+        fcm_token: "optional_fcm_token"
+      }
+      const res = await VerifyOTP(payload);
+      console.log('OTP submitted:', otp);
+      router.push("/create-profile")
+    } catch (error) {
+      
+    }
     // handle verification API call here
   };
 

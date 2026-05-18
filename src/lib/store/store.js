@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 const useAuthStore = create(
   persist(
     (set) => ({
-      role: null, // "user" | "contractor"
+      role: null, // "USER" | "CONTRACTOR"
       setRole: (role) => set({ role }),
       clearRole: () => set({ role: null }),
     }),

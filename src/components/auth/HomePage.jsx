@@ -12,8 +12,8 @@ const HomePage = () => {
   const setRole = useAuthStore((state) => state.setRole);
 
   const userTypes = [
-    { id: 1, title: "I'M A USER", role: "user", desc: "Post Jobs & hire professional", avatar: user_avatar },
-    { id: 2, title: "I'M A CONTRACTOR", role: "contractor", desc: "Post Jobs & hire professional", avatar: contractor_avatar }
+    { id: 1, title: "I'M A USER", role: "USER", desc: "Post Jobs & hire professional", avatar: user_avatar },
+    { id: 2, title: "I'M A CONTRACTOR", role: "CONTRACTOR", desc: "Post Jobs & hire professional", avatar: contractor_avatar }
   ];
 
   const handleSelect = (role) => {

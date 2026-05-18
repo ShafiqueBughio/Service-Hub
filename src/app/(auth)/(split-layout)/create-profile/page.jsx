@@ -16,7 +16,7 @@ const TOTAL_STEPS = 3;
 
 const page = () => {
   const role = useAuthStore((state) => state.role);
-  const isContractor = role === 'contractor';
+  const isContractor = role === 'CONTRACTOR';
   const router = useRouter();
 
   const [isMobile, setIsMobile] = useState(false);

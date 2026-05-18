@@ -34,7 +34,7 @@ const Sidebar = ({ isCollapsed, onLogoClick, onNavClick }) => {
   const role = useAuthStore((state) => state.role);  // ← hook inside component
   const showLabel = !isCollapsed;
 
-  const navItems = role === 'contractor' ? navItemsContractor : navItemsUser;
+  const navItems = role === 'CONTRACTOR' ? navItemsContractor : navItemsUser;
 
   return (
     <aside

@@ -7,12 +7,17 @@ import SignUpForm from '@/components/auth/SignUpForm';
 import Link from 'next/link';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { SignUp } from '@/lib/api/auth';
+import useAuthStore from '@/lib/store/store';
 
 const page = () => {
+  const role = useAuthStore((state) => state.role);
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const [apiResponse,setApiResponse] = useState(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -31,13 +36,22 @@ const page = () => {
       setShowTermsError(true);
       return;
     }
+    const payload = {
+      identifier : data?.email,
+      password : data?.password,
+      user_type : role,
+      fcm_token : "optional_fcm_token"
+    }
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setShowTermsError(false);
-      console.log({ ...data, agreeToTerms: true });
+      const res = await SignUp(payload);
+      setApiResponse(res);
+      toast.success(res?.message || "Signup Successfully!");
       router.push('/verification');
+      setShowTermsError(false);
     } catch (error) {
-      console.log(error);
+      const errMsg = error?.response?.data?.message || "Something went wrong";
+      toast.error(errMsg);
+      console.log(errMsg)
     }
   };
 

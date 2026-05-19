@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials:true
 });
 
 export const SignUp = async (payload) => {
@@ -14,5 +15,11 @@ export const SignUp = async (payload) => {
 
 export const VerifyOTP = async (payload) => {
   const response = await api.post("/user/verify_otp", payload);
+  return response.data;
+};
+
+
+export const ResendOTP = async (payload) => {
+  const response = await api.post("/user/resend_otp", payload);
   return response.data;
 };

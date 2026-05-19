@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-const TOTAL = 30; // seconds
+const TOTAL = 60; // seconds
 const STORAGE_KEY = 'otp_timer_end';
 
 const getInitialSeconds = () => {

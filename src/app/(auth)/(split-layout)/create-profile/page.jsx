@@ -11,13 +11,17 @@ import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import Title from '@/components/general/Title';
 import useAuthStore from '@/lib/store/store';
 import { useRouter } from 'next/navigation';
+import useTokenStore from '@/lib/store/tokenStore';
 
 const TOTAL_STEPS = 3;
 
 const page = () => {
   const role = useAuthStore((state) => state.role);
+  const {accessToken} = useTokenStore();
   const isContractor = role === 'CONTRACTOR';
   const router = useRouter();
+
+  console.log(accessToken,"Access Token")
 
   const [isMobile, setIsMobile] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);

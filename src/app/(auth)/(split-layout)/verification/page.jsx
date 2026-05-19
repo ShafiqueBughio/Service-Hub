@@ -1,17 +1,22 @@
 "use client"
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from 'react-icons/io';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import VerificationForm from '@/components/auth/verification/VerificationForm';
 import Title from '@/components/general/Title';
-import useAuthStore from '@/lib/store/store';
+import useTokenStore from '@/lib/store/tokenStore';
+import toast from 'react-hot-toast';
+import { VerifyOTP, ResendOTP } from '@/lib/api/auth';
 
 const page = () => {
   const router = useRouter();
-  const identifier = useAuthStore((state) => state.identifier);
+  const searchParams = useSearchParams();
+  const identifier = searchParams.get('email');
+  const {setAccessToken} = useTokenStore();
 
-  const handleVerify = async(otp) => {
+  const handleVerify = async (otp) => {
     try {
       const payload = {
         identifier: identifier,
@@ -19,17 +24,33 @@ const page = () => {
         fcm_token: "optional_fcm_token"
       }
       const res = await VerifyOTP(payload);
-      console.log('OTP submitted:', otp);
+      const accessToken = res?.data?.access_token;
+      if (accessToken) {
+        setAccessToken(accessToken);
+      }
+      toast.success(res?.message || "OTP verified successfully!");
       router.push("/create-profile")
     } catch (error) {
-      
+      const errMsg = error?.response?.data?.message || "Something went wrong";
+      toast.error(errMsg);
+      console.log(errMsg)
     }
-    // handle verification API call here
   };
 
-  const handleResend = () => {
-    console.log('Resend OTP');
-    // handle resend API call here
+  const handleResend = async() => {
+    try {
+      
+      const payload = {
+        identifier: identifier,
+      }
+      const res = await ResendOTP(payload);
+      toast.success(res?.message || "OTP resent successfully!");
+      console.log('OTP resent:', res?.otp);
+    } catch (error) {
+      const errMsg = error?.response?.data?.message || "Something went wrong";
+      toast.error(errMsg);
+      console.log(errMsg);
+    }
   };
 
   const content = (

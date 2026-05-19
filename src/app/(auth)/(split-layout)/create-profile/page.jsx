@@ -10,23 +10,32 @@ import StepIndicator from '@/components/ui/StepIndicator';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import Title from '@/components/general/Title';
 import useAuthStore from '@/lib/store/store';
+import useProfileStore from '@/lib/store/profileStore';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '@/lib/store/tokenStore';
+import { CreateUserProfile, CreateContractorProfile } from '@/lib/api/auth';
+import {
+  buildUserProfilePayload,
+  buildContractorProfilePayload,
+} from '@/lib/profile/helpers';
+import toast from 'react-hot-toast';
 
 const TOTAL_STEPS = 3;
 
+const getErrorMessage = (error) => {
+  const msg = error?.response?.data?.message;
+  return Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong';
+};
+
 const page = () => {
   const role = useAuthStore((state) => state.role);
-  const {accessToken} = useTokenStore();
+  const setProfile = useProfileStore((state) => state.setProfile);
   const isContractor = role === 'CONTRACTOR';
   const router = useRouter();
 
-  console.log(accessToken,"Access Token")
-
   const [isMobile, setIsMobile] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
 
-  // multi-step form data stored in memory only (no localStorage)
   const [stepsData, setStepsData] = useState({
     step1: null,
     step2: null,
@@ -64,46 +73,81 @@ const page = () => {
   const [businessLicense, setBusinessLicense] = useState(null);
   const [certifications, setCertifications] = useState(null);
 
-  // Step 1 submit
+  const handleProfileSuccess = (response) => {
+    const userDetails = response?.data?.userDetails;
+    if (userDetails) {
+      setProfile({
+        ...userDetails,
+        user: response?.data?.user ?? null,
+      });
+    }
+    toast.success(response?.message || 'Profile created successfully!');
+    router.push('/dashboard');
+  };
+
   const onStep1Submit = async (data) => {
     if (!phone) {
-      alert('Phone number is required');
+      toast.error('Phone number is required');
       return;
     }
+
+    const step1 = { ...data, phone };
+    saveStepData(1, step1);
+
     if (isContractor) {
-      saveStepData(1, { ...data, phone });
       setCurrentStep(2);
-    } else {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        console.log('User profile submitted:', { ...data, phone });
-        router.push('/dashboard');
-      } catch (error) {
-        console.log(error);
+      return;
+    }
+
+    setIsSubmittingProfile(true);
+    try {
+      const payload = buildUserProfilePayload(data, phone);
+      const response = await CreateUserProfile(payload);
+      if (response?.status?.success) {
+        handleProfileSuccess(response);
+      } else {
+        toast.error(response?.message || 'Something went wrong');
       }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setIsSubmittingProfile(false);
     }
   };
 
-  // Step 2 submit
   const onStep2Submit = async (data) => {
-    saveStepData(2, data);
+    saveStepData(2, { ...data, businessLicense, certifications });
     setCurrentStep(3);
   };
 
-  // Step 3 final submit
   const onStep3Submit = async (data) => {
-    saveStepData(3, data);
+    const step3 = { ...data, portfolioImages };
+    saveStepData(3, step3);
+
+    const step2WithFiles = {
+      ...stepsData.step2,
+      businessLicense,
+      certifications,
+    };
+
+    setIsSubmittingProfile(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const fullData = {
-        ...stepsData.step1,
-        ...stepsData.step2,
-        ...data,
-      };
-      console.log('Contractor full data:', fullData);
-    //   router.push('/dashboard');
+      const payload = buildContractorProfilePayload(
+        stepsData.step1,
+        step2WithFiles,
+        step3
+      );
+      const response = await CreateContractorProfile(payload);
+
+      if (response?.status?.success) {
+        handleProfileSuccess(response);
+      } else {
+        toast.error(response?.message || 'Something went wrong');
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(getErrorMessage(error));
+    } finally {
+      setIsSubmittingProfile(false);
     }
   };
 
@@ -118,13 +162,12 @@ const page = () => {
     watch,
     previewUrl,
     setPreviewUrl,
-    isSubmitting,
+    isSubmitting: isSubmitting || isSubmittingProfile,
     submitText: isContractor ? 'Next' : 'Continue',
   };
 
   const content = (
     <div className='w-full flex-1 min-h-0 flex flex-col gap-5'>
-
       {isContractor && (
         <StepIndicator totalSteps={TOTAL_STEPS} currentStep={currentStep} />
       )}
@@ -150,6 +193,7 @@ const page = () => {
           savedData={stepsData.step3}
           portfolioImages={portfolioImages}
           setPortfolioImages={setPortfolioImages}
+          isSubmitting={isSubmittingProfile}
         />
       )}
     </div>
@@ -167,7 +211,7 @@ const page = () => {
 
   return (
     <div className='w-full h-full px-12 flex flex-col gap-6 py-10 min-h-0'>
-      <Title title={currentStep === 3 ? "Add Portfolio" :"Create Profile"} />
+      <Title title={currentStep === 3 ? 'Add Portfolio' : 'Create Profile'} />
       {content}
     </div>
   );

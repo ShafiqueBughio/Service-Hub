@@ -12,11 +12,12 @@ const ContractorStep3Form = ({
   savedData,
   portfolioImages,
   setPortfolioImages,
+  isSubmitting: isSubmittingExternal = false,
 }) => {
   const {
     handleSubmit,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm({
     resolver: yupResolver(contractorStep3Schema),
     defaultValues: savedData ?? { portfolioImages: [] },
@@ -36,6 +37,8 @@ const ContractorStep3Form = ({
   const handleFormSubmit = async (data) => {
     await onSubmit({ portfolioImages: data.portfolioImages });
   };
+
+  const isSubmitting = isFormSubmitting || isSubmittingExternal;
 
   return (
     <form

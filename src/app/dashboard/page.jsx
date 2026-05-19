@@ -1,5 +1,8 @@
+"use client"
 import React from 'react';
 import StatCard from '@/components/dashboard/StatCard';
+import useProfileStore from '@/lib/store/profileStore';
+
 
 const stats = [
   { title: 'Total Projects', value: '197', change: '+15.50%' },
@@ -9,11 +12,17 @@ const stats = [
 ];
 
 const page = () => {
+  const profile = useProfileStore((state) => state.profile);
+  const displayName =
+    profile?.full_name ||
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') ||
+    'there';
+
   return (
     <>
       {/* welcome */}
       <div className='mb-6'>
-        <p className='text-sm text-gray-500'>Welcome back, William!</p>
+        <p className='text-sm text-gray-500'>Welcome back, {displayName}!</p>
         <h1 className='font-bold text-gray-900'>Dashboard</h1>
       </div>
 

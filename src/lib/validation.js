@@ -38,7 +38,7 @@ export const createProfileSchema = yup.object({
   address: yup.string().required("Address is required"),
   city: yup.string().required("City is required"),
   state: yup.string().required("State is required"),
-  gender: yup.string().required("Please select your gender"),
+  gender: yup.string().oneOf(['male', 'female', 'other']).required("Please select your gender"),
   email: yup.string().email("Enter a valid email").required("Email is required"),
 });
 

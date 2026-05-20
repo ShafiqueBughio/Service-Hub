@@ -46,7 +46,7 @@ const page = () => {
       const res = await SignUp(payload);
       setApiResponse(res);
       toast.success(res?.message || "Signup Successfully!");
-      router.push(`/verification?email=${data?.email}`);
+      router.push(`/verification?purpose=REGISTER&email=${data?.email}`);
       setShowTermsError(false);
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Something went wrong";

@@ -1,4 +1,5 @@
-import { Schibsted_Grotesk } from "next/font/google"
+import { Schibsted_Grotesk } from "next/font/google";
+import AuthHydrator from "@/components/auth/AuthHydrator";
 import "../style/globals.css";
 import "../style/custom.css";
 
@@ -17,7 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${schibstedGrotesk.variable} font-schibsted`}>
-        {children}
+        <AuthHydrator>{children}</AuthHydrator>
       </body>
     </html>
   );

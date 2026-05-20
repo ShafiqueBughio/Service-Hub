@@ -6,6 +6,8 @@ import { resetPasswordSchema } from '@/lib/validation';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import { useRouter } from 'next/navigation';
+import { ResetPassword } from '@/lib/api/auth';
+import toast from 'react-hot-toast';
 
 const page = () => {
   const router = useRouter();
@@ -23,13 +25,23 @@ const page = () => {
     defaultValues: { password: '', confirmPassword: '' },
   });
 
+  const getErrorMessage = (error) => {
+    const msg = error?.response?.data?.message;
+    return Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong';
+  };
+
   const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Reset password:', data);
-      router.push('/login');
+      const payload = { password: data?.password };
+      const res = await ResetPassword(payload);
+      if(res?.status?.success){
+        toast.success(res?.message || 'Password reset successfully');
+        router.push('/login');
+      }else{
+        toast.error(res?.message || 'Failed to reset password');
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(getErrorMessage(error));
     }
   };
 

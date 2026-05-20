@@ -28,7 +28,7 @@ const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, 
           Terms &amp; Conditions
         </span>
         {' | '}
-        <span className='font-semibold cursor-pointer' onClick={() => router.push("/agreements?active=privacy")}>
+        <span className='font-semibold cursor-pointer' onClick={() => router.push("/agreements?active=policy")}>
           Privacy Policy
         </span>
       </p>

@@ -11,6 +11,10 @@ import {
 } from 'react-icons/md';
 import { Star, History, Wallet } from 'lucide-react';
 import useAuthStore from '@/lib/store/store';
+import useTokenStore from '@/lib/store/tokenStore';
+import { Logout } from '@/lib/api/auth';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const navItemsContractor = [
   { label: 'Home', icon: MdDashboard, href: '/dashboard' },
@@ -35,6 +39,27 @@ const Sidebar = ({ isCollapsed, onLogoClick, onNavClick }) => {
   const showLabel = !isCollapsed;
 
   const navItems = role === 'CONTRACTOR' ? navItemsContractor : navItemsUser;
+
+  const router = useRouter();
+  const getErrorMessage = (error) => {
+    const msg = error?.response?.data?.message;
+    return Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong';
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await Logout();
+      if (res?.status?.success) {
+        useTokenStore.getState().clearAccessToken();
+        router.push('/login');
+      } else {
+        toast.error(res?.message || "Failed to logout");
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      console.log(error, "Error");
+    }
+  };
 
   return (
     <aside
@@ -115,6 +140,7 @@ const Sidebar = ({ isCollapsed, onLogoClick, onNavClick }) => {
             <span
               className={`text-sm whitespace-nowrap transition-all duration-300 overflow-hidden
                 ${showLabel ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'}`}
+                onClick={handleLogout}
             >
               Logout
             </span>

@@ -7,10 +7,17 @@ import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import MobileAuthLayout from '@/components/auth/MobileAuthLayout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ForgotPassword } from '@/lib/api/auth';
+import toast from 'react-hot-toast';
 
 const page = () => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+
+  const getErrorMessage = (error) => {
+  const msg = error?.response?.data?.message;
+  return Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong';
+};
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -25,12 +32,17 @@ const page = () => {
   });
 
   const onSubmit = async (data) => {
+    const payload = { identifier: data?.email };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Forgot password email:', data.email);
-      router.push('/verification');
+      const res = await ForgotPassword(payload);
+      if(res?.status?.success){
+        toast.success(res?.message || 'Password reset otp sent to your email');
+        router.push(`/verification?purpose=FORGOT_PASSWORD&email=${data?.email}`);
+      }else{
+        toast.error(res?.message || 'Failed to send reset link. Please try again.');
+      }
     } catch (error) {
-      console.log(error);
+     toast.error(getErrorMessage(error));
     }
   };
 

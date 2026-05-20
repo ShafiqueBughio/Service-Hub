@@ -42,4 +42,34 @@ export const RefreshToken = async () => {
   };
 };
 
+export const ForgotPassword = async (payload) => {
+  const response = await api.post("/user/forget_password", payload);
+  return response.data;
+}
+
+export const VerifyForgotPasswordOTP = async (payload) => {
+  const response = await api.post("/user/verify_forget_password_otp", payload);
+  return response.data;
+}
+
+export const ResetPassword = async (payload) => {
+  const response = await api.post("/user/reset_password", payload);
+  return response.data;
+}
+
+export const Login = async (payload) => {
+  const response = await api.post("/user/login", payload);
+  return response.data;
+}
+
+export const ResendOTPForForgetPassword = async (payload) => {
+  const response = await api.post("/user/resend_otp_for_forget_password", payload);
+  return response.data;
+}
+
+export const Logout = async () => {
+  const response = await api.post("/user/logout");
+  return response.data;
+}
+
 export { default as api } from "@/lib/api/client";

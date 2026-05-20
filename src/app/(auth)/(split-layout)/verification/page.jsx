@@ -8,32 +8,52 @@ import VerificationForm from '@/components/auth/verification/VerificationForm';
 import Title from '@/components/general/Title';
 import useTokenStore from '@/lib/store/tokenStore';
 import toast from 'react-hot-toast';
-import { VerifyOTP, ResendOTP } from '@/lib/api/auth';
+import { VerifyOTP, ResendOTP , VerifyForgotPasswordOTP,ResendOTPForForgetPassword} from '@/lib/api/auth';
 
 const page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const identifier = searchParams.get('email');
+  const purpose = searchParams.get('purpose');
   const {setAccessToken} = useTokenStore();
+
+  const getErrorMessage = (error) => {
+    const msg = error?.response?.data?.message;
+    return Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong';
+  };
 
   const handleVerify = async (otp) => {
     try {
       const payload = {
-        identifier: identifier,
-        otp: otp,
-        fcm_token: "optional_fcm_token"
+        identifier,
+        otp,
+        fcm_token: "optional_fcm_token",
+      };
+  
+      let res;
+  
+      if (purpose === "REGISTER") {
+        res = await VerifyOTP(payload);
+      } else {
+        res = await VerifyForgotPasswordOTP(payload);
       }
-      const res = await VerifyOTP(payload);
+  
       const accessToken = res?.data?.access_token;
+  
       if (accessToken) {
         setAccessToken(accessToken);
       }
+  
       toast.success(res?.message || "OTP verified successfully!");
-      router.push("/create-profile")
+  
+      router.push(
+        purpose === "REGISTER"
+          ? "/create-profile"
+          : "/reset-password"
+      );
+  
     } catch (error) {
-      const errMsg = error?.response?.data?.message || "Something went wrong";
-      toast.error(errMsg);
-      console.log(errMsg)
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -43,13 +63,22 @@ const page = () => {
       const payload = {
         identifier: identifier,
       }
-      const res = await ResendOTP(payload);
-      toast.success(res?.message || "OTP resent successfully!");
-      console.log('OTP resent:', res?.otp);
+
+      let res;
+
+      if(purpose === "REGISTER"){
+        res = await ResendOTP(payload);
+      }else{
+        res = await ResendOTPForForgetPassword(payload);
+      }
+
+      if(res?.status?.success){
+        toast.success(res?.message || "OTP resent successfully!");
+      }else{
+        toast.error(res?.message || "Failed to resend OTP");
+      }
     } catch (error) {
-      const errMsg = error?.response?.data?.message || "Something went wrong";
-      toast.error(errMsg);
-      console.log(errMsg);
+      toast.error(getErrorMessage(error));
     }
   };
 

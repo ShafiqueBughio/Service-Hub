@@ -10,7 +10,7 @@ const PUBLIC_ROUTES = [
   "/user/resend_otp",
   "/user/login",
   "/user/forget_password",
-  "/user/reset_password",
+  "/user/verify_forget_password_otp",
 ];
 
 let refreshPromise = null;

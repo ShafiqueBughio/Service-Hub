@@ -87,7 +87,7 @@ const SignUpForm = ({
             </Link>
             {' | '}
             <Link
-              href='/agreements?active=privacy'
+              href='/agreements?active=policy'
               onClick={(e) => e.stopPropagation()}
               className='text-primary underline font-medium md:text-sm text-xs'
             >

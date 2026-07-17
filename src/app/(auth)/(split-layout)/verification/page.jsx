@@ -27,30 +27,38 @@ const page = () => {
       const payload = {
         identifier,
         otp,
-        fcm_token: "optional_fcm_token",
       };
   
       let res;
   
       if (purpose === "REGISTER") {
-        res = await VerifyOTP(payload);
+        // Registration flow: verify OTP → get access_token + refresh_token → login session
+        const registerPayload = { ...payload, fcm_token: "optional_fcm_token" };
+        res = await VerifyOTP(registerPayload);
+
+        const accessToken = res?.data?.access_token;
+        if (accessToken) {
+          setAccessToken(accessToken);
+        }
+
+        toast.success(res?.message || "OTP verified successfully!");
+         localStorage.removeItem('otp_timer_end');
+        router.push("/create-profile");
+
       } else {
+        // Forgot password flow: verify OTP → get reset_token (NOT a login session)
         res = await VerifyForgotPasswordOTP(payload);
+
+        const resetToken = res?.data?.reset_token;
+        if (resetToken) {
+          // Store reset_token temporarily — used only for the reset_password request
+          sessionStorage.setItem("reset_token", resetToken);
+        }
+
+        toast.success(res?.message || "OTP verified successfully!");
+        localStorage.removeItem('otp_timer_end');
+        router.push("/reset-password");
       }
-  
-      const accessToken = res?.data?.access_token;
-  
-      if (accessToken) {
-        setAccessToken(accessToken);
-      }
-  
-      toast.success(res?.message || "OTP verified successfully!");
-  
-      router.push(
-        purpose === "REGISTER"
-          ? "/create-profile"
-          : "/reset-password"
-      );
   
     } catch (error) {
       toast.error(getErrorMessage(error));

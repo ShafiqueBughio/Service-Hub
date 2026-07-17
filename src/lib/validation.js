@@ -92,12 +92,31 @@ export const forgotPasswordSchema = yup.object({
 });
 
 export const resetPasswordSchema = yup.object({
-  password: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("New password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "Passwords do not match")
-    .required("Please confirm your password"),
+  password: yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      "Password must contain at least one special character (@ $ ! % * ? &)"
+    ),
+  confirmPassword: yup.string()
+    .required("Confirm password is required")
+    .oneOf([yup.ref("password")], "Passwords do not match"),
+});
+
+export const changePasswordSchema = yup.object({
+  old_password: yup.string()
+    .required("Existing password is required"),
+
+  password: yup.string()
+    .required("New password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      "Must contain at least one special character (@ $ ! % * ? &)"
+    ),
+
+  confirmPassword: yup.string()
+    .required("Please confirm your new password")
+    .oneOf([yup.ref("password")], "Passwords do not match"),
 });

@@ -52,8 +52,10 @@ export const VerifyForgotPasswordOTP = async (payload) => {
   return response.data;
 }
 
-export const ResetPassword = async (payload) => {
-  const response = await api.post("/user/reset_password", payload);
+export const ResetPassword = async (payload, resetToken) => {
+  const response = await api.post("/user/reset_password", payload, {
+    headers: resetToken ? { Authorization: `Bearer ${resetToken}` } : {},
+  });
   return response.data;
 }
 
@@ -69,6 +71,11 @@ export const ResendOTPForForgetPassword = async (payload) => {
 
 export const Logout = async () => {
   const response = await api.post("/user/logout");
+  return response.data;
+}
+
+export const ChangePassword = async (payload) => {
+  const response = await api.post("/user/change_password", payload);
   return response.data;
 }
 

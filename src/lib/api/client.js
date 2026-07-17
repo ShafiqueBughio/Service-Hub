@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = [
   "/user/login",
   "/user/forget_password",
   "/user/verify_forget_password_otp",
+  "/user/reset_password", // uses its own short-lived reset_token, not an access token
 ];
 
 let refreshPromise = null;

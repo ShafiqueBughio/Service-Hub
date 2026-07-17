@@ -32,9 +32,17 @@ const page = () => {
 
   const onSubmit = async (data) => {
     try {
+      const resetToken = sessionStorage.getItem('reset_token');
+      if (!resetToken) {
+        toast.error('Session expired. Please verify your OTP again.');
+        router.push('/forgot-password');
+        return;
+      }
+
       const payload = { password: data?.password };
-      const res = await ResetPassword(payload);
+      const res = await ResetPassword(payload, resetToken);
       if(res?.status?.success){
+        sessionStorage.removeItem('reset_token');
         toast.success(res?.message || 'Password reset successfully');
         router.push('/login');
       }else{

@@ -8,11 +8,13 @@ import { useRouter } from 'next/navigation';
 import { Login } from '@/lib/api/auth';
 import toast from 'react-hot-toast';
 import useTokenStore from '@/lib/store/tokenStore';
+import useAuthStore from '@/lib/store/store';
 
 const page = () => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const {setAccessToken} = useTokenStore();
+  const { setAccessToken } = useTokenStore();
+  const role = useAuthStore((state) => state.role);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -32,12 +34,24 @@ const page = () => {
 
   const handleLogin = async (data) => {
     try {
-      const payload = { identifier: data?.email, password: data?.password, fcm_token: "optional_fcm_token" };
+      if (!role) {
+        toast.error('Please go back and select your account type first.');
+        router.push('/');
+        return;
+      }
+
+      const payload = {
+        identifier: data?.email,
+        password: data?.password,
+        user_type: role,
+        fcm_token: "optional_fcm_token",
+      };
+
       const res = await Login(payload);
-      if(res?.status?.success){
+      if (res?.status?.success) {
         setAccessToken(res?.data?.access_token);
         router.push("/dashboard");
-      }else{
+      } else {
         toast.error(res?.message || 'Failed to login');
       }
     } catch (error) {

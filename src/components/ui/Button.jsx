@@ -7,7 +7,7 @@ const Button = ({ text, className, isSubmitting, disabled }) => {
       disabled={isSubmitting || disabled}
       className={`bg-primary-gradient w-full text-white rounded-lg py-2.5 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
     >
-      {text}
+      {isSubmitting ? `${text}ing` : text}
     </button>
   )
 }

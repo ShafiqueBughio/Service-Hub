@@ -4,11 +4,12 @@ import { useRouter } from 'next/navigation';
 
 
 const PageHeader = ({title}) => {
+  const router = useRouter();
   return (
-      <div className={`flex gap-4 items-center`}>
+      <div className={`flex gap-3 items-center`}>
               <div
             onClick={() => router.back()}
-            className='cursor-pointer bg-primary text-white rounded-md p-1'
+            className='cursor-pointer bg-gray-300 shadow-sm text-black rounded-md p-1'
           >
             <IoArrowBack size={22} />
           </div>

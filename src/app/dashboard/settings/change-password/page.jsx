@@ -46,7 +46,7 @@ const page = () => {
     <div className="h-full flex flex-col">
 
       {/* Header */}
-      <div className="">
+      <div>
         <PageHeader title="Change Password" />
       </div>
 

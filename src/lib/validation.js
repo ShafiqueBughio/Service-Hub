@@ -120,3 +120,15 @@ export const changePasswordSchema = yup.object({
     .required("Please confirm your new password")
     .oneOf([yup.ref("password")], "Passwords do not match"),
 });
+
+
+export const reportIssueSchema = yup.object({
+  Subject : yup.string().required("Subject is required").max(100,"Subject must be maximum of 100 characters"),
+
+  Description : yup.string().required("Please add some description of the issue"),
+
+  Attachment : yup
+    .array()
+    .min(1, 'Please upload at least one Attachment')
+    .required('Attachment images are required'),
+})

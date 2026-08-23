@@ -79,4 +79,11 @@ export const ChangePassword = async (payload) => {
   return response.data;
 }
 
+
+export const deleteUser = async()=>{
+  const response = await api.delete("/user");
+  return response.data;
+}
+
+
 export { default as api } from "@/lib/api/client";

@@ -9,21 +9,21 @@ const Modal = ({title,desc,onCancel,onConfirm}) => {
                   <MdDeleteOutline size={28} className="text-red-500" />
                 </div>
                 <h3 className="text-center font-bold text-gray-900 text-lg mb-1">{title}</h3>
-                <p className="text-center text-sm text-gray-500 mb-6">
+                <p className="text-center text-sm text-gray-500 mb-6 md:px-18">
                   {desc}
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={onCancel}
-                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-white bg-primary-gradient hover:opacity-90 transition-opacity  cursor-pointer"
                   >
-                    Cancel
+                    No, I Don't
                   </button>
                   <button
                     onClick={onConfirm}
-                    className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-100  text-gray-800 text-sm font-semibold transition-colors cursor-pointer"
                   >
-                    Delete
+                    Yes, Sure
                   </button>
                 </div>
               </div>

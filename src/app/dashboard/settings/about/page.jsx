@@ -26,9 +26,7 @@ const page = () => {
   },
 ];
   return (
-    <div>
       <LegalPolicies title={"About"} data={sections}/>
-    </div>
   )
 }
 

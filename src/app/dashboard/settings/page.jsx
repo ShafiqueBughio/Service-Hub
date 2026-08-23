@@ -15,6 +15,9 @@ import {
 import { FaShieldAlt } from 'react-icons/fa';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import Modal from '@/components/general/Modal';
+import { deleteUser } from '@/lib/api/auth';
+import toast from 'react-hot-toast';
+import useTokenStore from '@/lib/store/tokenStore';
 
 // ─── Chevron right icon ───────────────────────────────────────────────────────
 const ChevronRight = () => (
@@ -75,6 +78,27 @@ const SettingsPage = () => {
   const [pushNotifications, setPushNotifications] = useState(true);
   const [allowLocation, setAllowLocation] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  //delete user 
+  const confirmDelete = async()=>{
+    try {
+       const res = await deleteUser();
+       if(res?.status?.success){
+        setShowDeleteModal(false);
+        // Clear access token from Zustand store
+        useTokenStore.getState().clearAccessToken();
+        // refresh_token is cleared by the backend via Set-Cookie: Max-Age=0
+        router.push('/');
+       }else{
+        toast.error(res?.message || "Failed to delete account");
+       }
+    } catch (error) {
+      const msg = error?.response?.data?.message;
+      toast.error(Array.isArray(msg) ? msg.join(', ') : msg || "Something went wrong");
+      console.log("Error : ", error);
+    }
+  }
+
 
   return (
     <div className="h-full flex flex-col py-4">
@@ -201,11 +225,10 @@ const SettingsPage = () => {
       {showDeleteModal && (
         <Modal
           title="Delete Account"
-          desc="This action is permanent and cannot be undone. All your data will be erased."
+          desc="Are you sure you want to delete your account?"
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={() => {
-            // TODO: wire up delete account API
-            setShowDeleteModal(false);
+            confirmDelete();
           }}
         />
       )}

@@ -40,7 +40,7 @@ const AttachmentUpload = ({ control, name, error }) => {
         {field.value.map((item, idx) => (
           <div
             key={idx}
-            className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shrink-0"
+            className="relative w-24 h-24 rounded-xl  border border-gray-200 bg-gray-50 shrink-0"
           >
             <img
               src={item.url}
@@ -121,9 +121,10 @@ const page = () => {
       <div className="flex flex-col items-center py-4 ">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-5 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 w-full max-w-xl"
+          className="flex max-h-[74dvh]  flex-col gap-5   bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 w-full max-w-xl"
         >
-          <Input
+          <div className='overflow-y-auto flex flex-col gap-5'>
+        <Input
             name="Subject"
             placeholder="Enter subject"
             label="Subject"
@@ -146,7 +147,8 @@ const page = () => {
             name="Attachment"
             error={errors}
           />
-
+          </div>
+          
           {/* Submit button */}
           <Button
           text={"Submit"}

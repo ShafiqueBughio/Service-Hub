@@ -85,5 +85,10 @@ export const deleteUser = async()=>{
   return response.data;
 }
 
+export const getUserProfile = async()=>{
+  const response = await api.get("/user/profile");
+  return response.data;
+}
+
 
 export { default as api } from "@/lib/api/client";

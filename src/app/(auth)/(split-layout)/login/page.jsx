@@ -9,6 +9,7 @@ import { Login } from '@/lib/api/auth';
 import toast from 'react-hot-toast';
 import useTokenStore from '@/lib/store/tokenStore';
 import useAuthStore from '@/lib/store/store';
+import { initializeMessaging } from '@/services/firebaseMessaging';
 
 const page = () => {
   const router = useRouter();
@@ -50,6 +51,8 @@ const page = () => {
       const res = await Login(payload);
       if (res?.status?.success) {
         setAccessToken(res?.data?.access_token);
+        // Now initialize Firebase
+    await initializeMessaging();
         router.push("/dashboard");
       } else {
         toast.error(res?.message || 'Failed to login');

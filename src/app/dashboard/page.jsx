@@ -13,6 +13,8 @@ const stats = [
 
 const page = () => {
   const profile = useProfileStore((state) => state.profile);
+
+  console.log(profile,"Profile")
   const displayName =
     profile?.full_name ||
     [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') ||

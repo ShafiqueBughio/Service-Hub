@@ -1,9 +1,20 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { MdNotifications, MdChat, MdLocationOn, MdKeyboardArrowDown } from 'react-icons/md';
+import { useRouter } from 'next/navigation';
+import useProfileStore from '@/lib/store/profileStore';
 
-const Navbar = ({ userName = 'William Smith', userEmail = 'william.smith@domain.com' }) => {
+const Navbar = () => {
+  const router = useRouter();
+  const profile = useProfileStore((state) => state.profile);
   const [location, setLocation] = useState('Fetching location...');
+
+  // Derive display name and email from profile
+  const firstName = profile?.user_details?.first_name || '';
+  const lastName  = profile?.user_details?.last_name  || '';
+  const userName  = [firstName, lastName].filter(Boolean).join(' ') || profile?.email || 'User';
+  const userEmail = profile?.email || '';
+  const avatarLetter = userName.charAt(0).toUpperCase();
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -18,7 +29,6 @@ const Navbar = ({ userName = 'William Smith', userEmail = 'william.smith@domain.
             `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
           );
           const data = await res.json();
-          // show short address: road + city + country
           const addr = data.address;
           const short = [addr?.road, addr?.city || addr?.town || addr?.village, addr?.country]
             .filter(Boolean)
@@ -57,6 +67,7 @@ const Navbar = ({ userName = 'William Smith', userEmail = 'william.smith@domain.
 
         {/* right side */}
         <div className='flex items-center gap-3'>
+
           {/* chat */}
           <button className='relative w-9 h-9 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors'>
             <MdChat size={18} />
@@ -70,16 +81,20 @@ const Navbar = ({ userName = 'William Smith', userEmail = 'william.smith@domain.
             </span>
           </button>
 
-          {/* user */}
-          <div className='flex items-center gap-2'>
+          {/* user — click to go to profile */}
+          <button
+            onClick={() => router.push('/dashboard/profile')}
+            className='flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer'
+          >
             <div className='w-9 h-9 rounded-full bg-primary-gradient flex items-center justify-center text-white font-bold text-sm shrink-0'>
-              {userName.charAt(0)}
+              {avatarLetter}
             </div>
-            <div className='hidden md:block'>
+            <div className='hidden md:block text-left'>
               <p className='text-white text-sm font-semibold leading-tight'>{userName}</p>
               <p className='text-white/60 text-xs'>{userEmail}</p>
             </div>
-          </div>
+          </button>
+
         </div>
       </div>
     </header>

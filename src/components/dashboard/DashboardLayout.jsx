@@ -3,10 +3,28 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
+import { getUserProfile } from '@/lib/api/auth';
+import useProfileStore from '@/lib/store/profileStore';
 
 const DashboardLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const setProfile = useProfileStore((state) => state.setProfile);
+
+  // Fetch logged-in user profile once on mount and store it globally
+  const fetchProfile = async () => {
+      try {
+        const res = await getUserProfile();
+        if (res?.status?.success) {
+          setProfile(res.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   useEffect(() => {
     const check = () => {

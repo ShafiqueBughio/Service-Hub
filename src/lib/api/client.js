@@ -9,9 +9,10 @@ const PUBLIC_ROUTES = [
   "/user/verify_otp",
   "/user/resend_otp",
   "/user/login",
+  "/user/social_login",
   "/user/forget_password",
   "/user/verify_forget_password_otp",
-  "/user/reset_password", // uses its own short-lived reset_token, not an access token
+  "/user/reset_password",
 ];
 
 let refreshPromise = null;

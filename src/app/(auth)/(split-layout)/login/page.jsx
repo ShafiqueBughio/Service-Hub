@@ -5,17 +5,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from '@/lib/validation';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { Login } from '@/lib/api/auth';
+import { getSocialLogin, Login } from '@/lib/api/auth';
 import toast from 'react-hot-toast';
 import useTokenStore from '@/lib/store/tokenStore';
 import useAuthStore from '@/lib/store/store';
-import { initializeMessaging } from '@/services/firebaseMessaging';
+import {signInWithPopup} from "firebase/auth"
+import { auth,googleProvider } from '@/lib/firebase/auth';
+
 
 const page = () => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { setAccessToken } = useTokenStore();
   const role = useAuthStore((state) => state.role);
+
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -51,8 +54,6 @@ const page = () => {
       const res = await Login(payload);
       if (res?.status?.success) {
         setAccessToken(res?.data?.access_token);
-        // Now initialize Firebase
-    await initializeMessaging();
         router.push("/dashboard");
       } else {
         toast.error(res?.message || 'Failed to login');
@@ -63,12 +64,44 @@ const page = () => {
     }
   };
 
+  const handleGoogleLogin = async (social_type) => {
+    try {
+      if (!role) {
+        toast.error('Please go back and select your account type first.');
+        router.push('/');
+        return;
+      }
+
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      const payload = {
+        token: idToken,
+        user_type: role,
+        social_type,
+      };
+
+      const res = await getSocialLogin(payload);
+
+      if (res?.status?.success) {
+        setAccessToken(res?.data?.access_token);
+        router.push('/dashboard');
+      } else {
+        toast.error(res?.message || 'Google login failed');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error(getErrorMessage(error));
+    }
+  };
+
   return (
     <LoginPage
       register={register}
       errors={errors}
       handleSubmit={handleSubmit}
       handleLogin={handleLogin}
+      handleGoogleLogin={handleGoogleLogin}
       isSubmitting={isSubmitting}
       isMobile={isMobile}
     />

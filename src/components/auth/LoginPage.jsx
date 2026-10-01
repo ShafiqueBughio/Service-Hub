@@ -12,12 +12,13 @@ import { FaApple } from "react-icons/fa6";
 import Link from 'next/link';
 import MobileAuthLayout from './MobileAuthLayout';
 
-const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, isMobile }) => {
+
+const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, isMobile,handleGoogleLogin }) => {
   const router = useRouter();
 
   const SignOptions = [
-    { id: 1, title: "Sign in Apple", icon: <FaApple size={20} /> },
-    { id: 2, title: "Sign in Google", icon: <FcGoogle size={20} /> }
+    { id: 1, title: "Sign in Apple", icon: <FaApple size={20} />, type:"APPLE" },
+    { id: 2, title: "Sign in Google", icon: <FcGoogle size={20} />,type:"GOOGLE" }
   ];
 
   const termsFooter = (
@@ -72,7 +73,11 @@ const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, 
 
       <div className='w-full flex gap-4 justify-center items-center'>
         {SignOptions.map((opt) => (
-          <div key={opt.id} className='w-40 p-2 flex gap-2 items-center justify-center cursor-pointer border border-gray-400 rounded-full'>
+          <div 
+          onClick={()=>{
+            opt.type === "GOOGLE" && handleGoogleLogin(opt.type);
+          }}
+          key={opt.id} className='w-40 p-2 flex gap-2 items-center justify-center cursor-pointer border border-gray-400 rounded-full'>
             {opt.icon}
             <p>{opt.title}</p>
           </div>

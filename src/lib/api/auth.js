@@ -91,4 +91,10 @@ export const getUserProfile = async()=>{
 }
 
 
+export const getSocialLogin = async(payload)=>{
+  const response = await api.post("/user/social_login",payload)
+  return response.data;
+}
+
+
 export { default as api } from "@/lib/api/client";

@@ -80,6 +80,12 @@ export const ChangePassword = async (payload) => {
 }
 
 
+export const SetPassword = async (payload) => {
+  const response = await api.post("/user/set_password", payload);
+  return response.data;
+}
+
+
 export const deleteUser = async()=>{
   const response = await api.delete("/user");
   return response.data;
@@ -87,6 +93,21 @@ export const deleteUser = async()=>{
 
 export const getUserProfile = async()=>{
   const response = await api.get("/user/profile");
+  return response.data;
+}
+
+export const getNotifications = async () => {
+  const response = await api.get("/notifications");
+  return response.data;
+}
+
+export const markAllNotificationsRead = async () => {
+  const response = await api.patch("/notifications/read_all");
+  return response.data;
+}
+
+export const markNotificationRead = async (id) => {
+  const response = await api.patch(`/notifications/${id}`);
   return response.data;
 }
 

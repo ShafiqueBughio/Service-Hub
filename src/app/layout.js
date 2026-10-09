@@ -10,8 +10,8 @@ const schibstedGrotesk = Schibsted_Grotesk({
 });
 
 export const metadata = {
-  title: "Service Hub",
-  description: "Service Hub — Connecting users with the right professionals",
+  title: "Service Link",
+  description: "Service Link — Connecting users with the right professionals",
 };
 
 export default function RootLayout({ children }) {

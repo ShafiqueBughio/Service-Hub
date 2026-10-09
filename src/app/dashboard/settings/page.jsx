@@ -146,7 +146,7 @@ const SettingsPage = () => {
         />
         <FeatureCard
           icon={MdLock}
-          label="Change Password"
+          label="Set / Change Password"
           iconBg="bg-primary/10"
           iconColor="text-primary"
           onClick={() => router.push('/dashboard/settings/change-password')}

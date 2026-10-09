@@ -11,6 +11,7 @@ import useTokenStore from '@/lib/store/tokenStore';
 import useAuthStore from '@/lib/store/store';
 import {signInWithPopup} from "firebase/auth"
 import { auth,googleProvider } from '@/lib/firebase/auth';
+import { showAlreadyReadToast } from '@/components/general/toast';
 
 
 const page = () => {
@@ -85,10 +86,34 @@ const page = () => {
 
       if (res?.status?.success) {
         setAccessToken(res?.data?.access_token);
-        router.push('/dashboard');
+        const user = res?.data?.user;
+        // Ensure role store matches actual user_type from DB
+        if (user?.user_type) {
+          useAuthStore.getState().setRole(user.user_type);
+        }
+        if (user?.is_completed) {
+          router.push('/dashboard');
+        } else {
+          router.push('/create-profile');
+        }
       } else {
         toast.error(res?.message || 'Google login failed');
       }
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+   const handleAppleLogin = async (social_type) => {
+    try {
+      if (!role) {
+        toast.error('Please go back and select your account type first.');
+        router.push('/');
+        return;
+      }
+      showAlreadyReadToast("Sign In with Apple will be added soon!")
+      
     } catch (error) {
       console.error('Google login error:', error);
       toast.error(getErrorMessage(error));
@@ -104,6 +129,7 @@ const page = () => {
       handleGoogleLogin={handleGoogleLogin}
       isSubmitting={isSubmitting}
       isMobile={isMobile}
+      handleAppleLogin={handleAppleLogin}
     />
   );
 };

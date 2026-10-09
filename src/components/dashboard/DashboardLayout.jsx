@@ -5,11 +5,17 @@ import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
 import { getUserProfile } from '@/lib/api/auth';
 import useProfileStore from '@/lib/store/profileStore';
+import Notification from '../ui/Notification';
+import toast from 'react-hot-toast';
+import { getNotifications } from '@/lib/api/auth';
+import useAuthStore from '@/lib/store/store';
 
 const DashboardLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const setProfile = useProfileStore((state) => state.setProfile);
+  const [toggle,setToggle] = useState(false);
+  const {setNotifications} = useAuthStore();
 
   // Fetch logged-in user profile once on mount and store it globally
   const fetchProfile = async () => {
@@ -25,6 +31,23 @@ const DashboardLayout = ({ children }) => {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+    //fetch notifications 
+    const fetch = async () => {
+        try {
+          const res = await getNotifications();
+          if (res?.status?.success) {
+            setNotifications(res.data ?? []);
+          }
+        } catch {
+          toast.error('Failed to load notifications');
+        }
+      };
+  
+    // Fetch on mount
+    useEffect(() => {
+      fetch();
+    }, []);
 
   useEffect(() => {
     const check = () => {
@@ -77,8 +100,11 @@ const DashboardLayout = ({ children }) => {
       )}
 
       {/* main area */}
-      <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden'>
-        <Navbar />
+      <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden relative'>
+        <Navbar toggle={toggle} setToggle={setToggle}/>
+        {toggle && (
+          <Notification onClose={() => setToggle(false)} />
+        )}
         <main className='flex-1 overflow-y-auto p-4 md:p-6'>
           <Toaster position="top-right"/>
           {children}

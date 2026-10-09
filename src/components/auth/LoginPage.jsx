@@ -13,7 +13,7 @@ import Link from 'next/link';
 import MobileAuthLayout from './MobileAuthLayout';
 
 
-const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, isMobile,handleGoogleLogin }) => {
+const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, isMobile,handleGoogleLogin,handleAppleLogin }) => {
   const router = useRouter();
 
   const SignOptions = [
@@ -75,7 +75,11 @@ const LoginPage = ({ register, errors, handleSubmit, handleLogin, isSubmitting, 
         {SignOptions.map((opt) => (
           <div 
           onClick={()=>{
-            opt.type === "GOOGLE" && handleGoogleLogin(opt.type);
+            if(opt.type === "GOOGLE"){
+              handleGoogleLogin(opt.type)
+            }else{
+              handleAppleLogin(opt.type);
+            }
           }}
           key={opt.id} className='w-40 p-2 flex gap-2 items-center justify-center cursor-pointer border border-gray-400 rounded-full'>
             {opt.icon}

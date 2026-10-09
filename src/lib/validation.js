@@ -121,6 +121,21 @@ export const changePasswordSchema = yup.object({
     .oneOf([yup.ref("password")], "Passwords do not match"),
 });
 
+//Set Password Schema
+export const setPasswordSchema = yup.object({
+  password: yup.string()
+    .required("New password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      "Must contain at least one special character (@ $ ! % * ? &)"
+    ),
+
+  confirmPassword: yup.string()
+    .required("Please confirm your new password")
+    .oneOf([yup.ref("password")], "Passwords do not match"),
+});
+
 
 export const reportIssueSchema = yup.object({
   Subject : yup.string().required("Subject is required").max(100,"Subject must be maximum of 100 characters"),

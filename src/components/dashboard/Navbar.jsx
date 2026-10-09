@@ -3,16 +3,25 @@ import React, { useState, useEffect } from 'react';
 import { MdNotifications, MdChat, MdLocationOn, MdKeyboardArrowDown } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import useProfileStore from '@/lib/store/profileStore';
+import useAuthStore from '@/lib/store/store';
 
-const Navbar = () => {
+const Navbar = ({ toggle, setToggle }) => {
   const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
+  const { notifications } = useAuthStore();
   const [location, setLocation] = useState('Fetching location...');
+
+  //un read notification
+  const unreadCount = Array.isArray(notifications)
+  ? notifications.filter((n) => !n.is_read).length
+  : 0;
+
+  console.log(notifications,"Notifications")
 
   // Derive display name and email from profile
   const firstName = profile?.user_details?.first_name || '';
-  const lastName  = profile?.user_details?.last_name  || '';
-  const userName  = [firstName, lastName].filter(Boolean).join(' ') || profile?.email || 'User';
+  const lastName = profile?.user_details?.last_name || '';
+  const userName = [firstName, lastName].filter(Boolean).join(' ') || profile?.email || 'User';
   const userEmail = profile?.email || '';
   const avatarLetter = userName.charAt(0).toUpperCase();
 
@@ -74,11 +83,17 @@ const Navbar = () => {
           </button>
 
           {/* notifications */}
-          <button className='relative w-9 h-9 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors'>
+          <button
+            onClick={() => setToggle(!toggle)}
+            className="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors cursor-pointer"
+          >
             <MdNotifications size={18} />
-            <span className='absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center font-bold'>
-              3
-            </span>
+
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
           </button>
 
           {/* user — click to go to profile */}

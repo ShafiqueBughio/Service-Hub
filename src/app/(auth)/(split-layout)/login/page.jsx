@@ -60,6 +60,14 @@ const page = () => {
         toast.error(res?.message || 'Failed to login');
       }
     } catch (error) {
+       const errorCode = error?.response?.data?.error?.code;
+      
+          if (errorCode === "ACCOUNT_NOT_VERIFIED") {
+            router.push(
+              `/verification?purpose=REGISTER&email=${encodeURIComponent(data.email)}&resend=true`
+            );
+            return;
+          }
       toast.error(getErrorMessage(error));
       console.log(error);
     }

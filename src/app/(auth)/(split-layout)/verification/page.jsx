@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -9,6 +9,7 @@ import Title from '@/components/general/Title';
 import useTokenStore from '@/lib/store/tokenStore';
 import toast from 'react-hot-toast';
 import { VerifyOTP, ResendOTP , VerifyForgotPasswordOTP,ResendOTPForForgetPassword} from '@/lib/api/auth';
+import { useRef } from 'react';
 
 const page = () => {
   const router = useRouter();
@@ -16,6 +17,9 @@ const page = () => {
   const identifier = searchParams.get('email');
   const purpose = searchParams.get('purpose');
   const {setAccessToken} = useTokenStore();
+
+  const shouldResend = searchParams.get("resend");
+  const hasRequestedOtp = useRef(false);
 
   const getErrorMessage = (error) => {
     const msg = error?.response?.data?.message;
@@ -89,6 +93,42 @@ const page = () => {
       toast.error(getErrorMessage(error));
     }
   };
+
+
+  useEffect(()=>{
+    if (
+    purpose !== "REGISTER" ||
+    !identifier ||
+    shouldResend !== "true" ||
+    hasRequestedOtp.current
+  ) {
+    return;
+  }
+
+  hasRequestedOtp.current = true;
+
+   const resendRegistrationOTP = async () => {
+    try {
+      const res = await ResendOTP({
+        identifier,
+      });
+
+      if (res?.status?.success) {
+        toast.success(
+          res?.message || "Verification code sent successfully!"
+        );
+      } else {
+        toast.error(
+          res?.message || "Failed to resend verification code."
+        );
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  resendRegistrationOTP();
+  },[purpose,identifier,shouldResend])
 
   const content = (
     <>

@@ -50,8 +50,17 @@ const page = () => {
       setShowTermsError(false);
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Something went wrong";
-      toast.error(errMsg);
-      console.log(errMsg)
+       const errorCode = error?.response?.data?.error?.code;
+
+    if (errorCode === "ACCOUNT_NOT_VERIFIED") {
+      router.push(
+        `/verification?purpose=REGISTER&email=${encodeURIComponent(data.email)}&resend=true`
+      );
+      return;
+    }
+    toast.error(errMsg);
+    console.log(error);
+      
     }
   };
 

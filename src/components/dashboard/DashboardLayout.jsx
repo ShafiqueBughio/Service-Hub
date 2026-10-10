@@ -3,58 +3,53 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
-import { getUserProfile } from '@/lib/api/auth';
+import { getUserProfile, getUnreadCount } from '@/lib/api/auth';
 import useProfileStore from '@/lib/store/profileStore';
 import Notification from '../ui/Notification';
-import toast from 'react-hot-toast';
-import { getNotifications } from '@/lib/api/auth';
 import useAuthStore from '@/lib/store/store';
 
 const DashboardLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const setProfile = useProfileStore((state) => state.setProfile);
-  const [toggle,setToggle] = useState(false);
-  const {setNotifications} = useAuthStore();
+  const [isMobile, setIsMobile]       = useState(false);
+  const [toggle, setToggle]           = useState(false);
 
-  // Fetch logged-in user profile once on mount and store it globally
-  const fetchProfile = async () => {
+  const setProfile    = useProfileStore((state) => state.setProfile);
+  const setUnreadCount = useAuthStore((state) => state.setUnreadCount);
+
+  // Fetch user profile once on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
       try {
         const res = await getUserProfile();
-        if (res?.status?.success) {
-          setProfile(res.data);
-        }
+        if (res?.status?.success) setProfile(res.data);
       } catch (err) {
         console.error('Failed to fetch profile:', err);
       }
     };
-  useEffect(() => {
     fetchProfile();
   }, []);
 
-    //fetch notifications 
-    const fetch = async () => {
-        try {
-          const res = await getNotifications();
-          if (res?.status?.success) {
-            setNotifications(res.data ?? []);
-          }
-        } catch {
-          toast.error('Failed to load notifications');
+  // Fetch global unread count on mount — used by Navbar badge
+  // Independent of any date range, reflects all unread notifications
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await getUnreadCount();
+        if (res?.status?.success) {
+          setUnreadCount(res.data?.unread_count ?? 0);
         }
-      };
-  
-    // Fetch on mount
-    useEffect(() => {
-      fetch();
-    }, []);
+      } catch {
+        // badge silently fails — not critical
+      }
+    };
+    fetchCount();
+  }, []);
 
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile) setIsCollapsed(true);
-      else setIsCollapsed(false);
+      setIsCollapsed(mobile);
     };
     check();
     window.addEventListener('resize', check);
@@ -66,7 +61,7 @@ const DashboardLayout = ({ children }) => {
   return (
     <div className='flex h-[100dvh] w-[100vw] overflow-hidden bg-gray-50'>
 
-      {/* ── MOBILE sidebar — fixed overlay, does not push content ── */}
+      {/* ── MOBILE sidebar ── */}
       {isMobile && (
         <>
           <div
@@ -75,21 +70,14 @@ const DashboardLayout = ({ children }) => {
           >
             <Sidebar isCollapsed={isCollapsed} onLogoClick={toggleCollapse} onNavClick={() => setIsCollapsed(true)} />
           </div>
-
-          {/* backdrop — click to close when open */}
           {!isCollapsed && (
-            <div
-              className='fixed inset-0 z-30 bg-black/30'
-              onClick={toggleCollapse}
-            />
+            <div className='fixed inset-0 z-30 bg-black/30' onClick={toggleCollapse} />
           )}
-
-          {/* spacer so content doesn't go under collapsed sidebar */}
           <div className='shrink-0 w-16' />
         </>
       )}
 
-      {/* ── DESKTOP sidebar — normal flow, pushes content ── */}
+      {/* ── DESKTOP sidebar ── */}
       {!isMobile && (
         <div
           className='shrink-0 h-full transition-all duration-300'
@@ -99,14 +87,12 @@ const DashboardLayout = ({ children }) => {
         </div>
       )}
 
-      {/* main area */}
+      {/* ── Main area ── */}
       <div className='flex-1 flex flex-col min-w-0 h-full overflow-hidden relative'>
-        <Navbar toggle={toggle} setToggle={setToggle}/>
-        {toggle && (
-          <Notification onClose={() => setToggle(false)} />
-        )}
+        <Navbar toggle={toggle} setToggle={setToggle} />
+        {toggle && <Notification onClose={() => setToggle(false)} />}
         <main className='flex-1 overflow-y-auto p-4 md:p-6'>
-          <Toaster position="top-right"/>
+          <Toaster position="top-right" />
           {children}
         </main>
       </div>

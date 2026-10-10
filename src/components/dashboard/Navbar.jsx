@@ -8,15 +8,8 @@ import useAuthStore from '@/lib/store/store';
 const Navbar = ({ toggle, setToggle }) => {
   const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
-  const { notifications } = useAuthStore();
+  const { unreadCount } = useAuthStore();
   const [location, setLocation] = useState('Fetching location...');
-
-  //un read notification
-  const unreadCount = Array.isArray(notifications)
-  ? notifications.filter((n) => !n.is_read).length
-  : 0;
-
-  console.log(notifications,"Notifications")
 
   // Derive display name and email from profile
   const firstName = profile?.user_details?.first_name || '';

@@ -96,6 +96,14 @@ export const getUserProfile = async()=>{
   return response.data;
 }
 
+export const UpdateProfile = async (payload) => {
+  const formData = buildProfileFormData(payload);
+  const response = await api.patch("/user/profile", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+}
+
 export const getNotifications = async ({ days = 12, page = 1, limit = 20 } = {}) => {
   const response = await api.get("/notifications", { params: { days, page, limit } });
   return response.data;

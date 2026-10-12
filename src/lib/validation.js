@@ -137,6 +137,36 @@ export const setPasswordSchema = yup.object({
 });
 
 
+export const editUserProfileSchema = yup.object({
+  first_name:    yup.string().required('First name is required'),
+  last_name:     yup.string().required('Last name is required'),
+  address:       yup.string().required('Address is required'),
+  city:          yup.string().required('City is required'),
+  state:         yup.string().required('State is required'),
+  contact_phone: yup.string().optional(),
+  email:         yup.string().email('Enter a valid email').required('Email is required'),
+  gender:        yup.string().oneOf(['MALE', 'FEMALE', 'OTHER']).required('Gender is required'),
+});
+
+export const editContractorProfileSchema = yup.object({
+  first_name:    yup.string().required('First name is required'),
+  last_name:     yup.string().required('Last name is required'),
+  address:       yup.string().required('Address is required'),
+  city:          yup.string().required('City is required'),
+  state:         yup.string().required('State is required'),
+  contact_phone: yup.string().optional(),
+  email:         yup.string().email('Enter a valid email').required('Email is required'),
+  gender:        yup.string().oneOf(['MALE', 'FEMALE', 'OTHER']).required('Gender is required'),
+  about:         yup.string().optional(),
+  experiences:   yup.array().of(yup.object({
+    company:     yup.string().optional(),
+    designation: yup.string().optional(),
+    job_type:    yup.string().optional(),
+    start_year:  yup.string().optional(),
+    end_year:    yup.string().optional(),
+  })).optional(),
+});
+
 export const reportIssueSchema = yup.object({
   Subject : yup.string().required("Subject is required").max(100,"Subject must be maximum of 100 characters"),
 

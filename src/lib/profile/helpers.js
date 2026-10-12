@@ -13,6 +13,7 @@ export const buildUserProfilePayload = (data, phone) => ({
   city: data.city,
   state: data.state,
   contact_phone: phone,
+  contact_email : data.email,
   gender: toApiGender(data.gender),
   profile_picture: data.profileImage ?? null,
 });

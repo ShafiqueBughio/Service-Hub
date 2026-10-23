@@ -15,6 +15,9 @@ export const buildProfileFormData = (payload) => {
     business_license,
     certifications,
     portfolio_images,
+    cnic_front,
+    cnic_back,
+    selfie,
     ...rest
   } = payload;
 
@@ -68,6 +71,18 @@ export const buildProfileFormData = (payload) => {
     formData.append('portfolio_images', JSON.stringify(existingUrls));
     newFiles.forEach((file) => formData.append('portfolio_images', file));
   }
+
+  const appendIdentityFile = (key, value) => {
+    if (value instanceof File) {
+      formData.append(key, value);
+    } else if (typeof value === 'string' && value) {
+      formData.append(key, value);
+    }
+  };
+
+  appendIdentityFile('cnic_front', cnic_front);
+  appendIdentityFile('cnic_back', cnic_back);
+  appendIdentityFile('selfie', selfie);
 
   return formData;
 };

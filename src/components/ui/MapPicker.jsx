@@ -174,7 +174,7 @@ const MapPicker = ({ isOpen, onClose, onConfirm, initialPosition }) => {
       >
         {/* ── header ── */}
         <div className='flex items-center justify-between px-4 py-3 border-b shrink-0'>
-          <h3 className='font-semibold text-gray-800'>Select Service Area</h3>
+          <h3 className='font-semibold text-gray-800'>Add Service Area</h3>
           <button type='button' onClick={onClose}
             className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors'>
             <MdClose size={20} className='text-gray-600' />

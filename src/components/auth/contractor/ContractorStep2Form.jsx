@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { contractorStep2Schema } from '@/lib/validation';
@@ -7,6 +7,7 @@ import ExperienceFields from './ExperienceFields';
 import ServiceAreaInput from '@/components/ui/ServiceAreaInput';
 import ServicesTagInput from '@/components/ui/ServicesTagInput';
 import DocumentUpload from '@/components/ui/DocumentUpload';
+import MultiImageUpload from '@/components/ui/MultiImageUpload';
 import TextArea from '@/components/ui/TextArea';
 import Button from '@/components/ui/Button';
 import { IoAdd } from 'react-icons/io5';
@@ -19,37 +20,70 @@ const ContractorStep2Form = ({
   setBusinessLicense,
   certifications,
   setCertifications,
+  portfolioImages,
+  setPortfolioImages,
+  isSubmitting: isSubmittingExternal = false,
 }) => {
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    setValue,
+    formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm({
     resolver: yupResolver(contractorStep2Schema),
-    defaultValues: savedData ?? {
-      about: '',
-      experiences: [{ company: '', jobType: '', designation: '', startYear: '', endYear: '' }],
-      serviceArea: { address: '', lat: null, lng: null },
-      services: [],
-    },
+    defaultValues: (() => {
+      if (!savedData) {
+        return {
+          about: '',
+          experiences: [{ company: '', jobType: '', designation: '', startYear: '', endYear: '' }],
+          serviceAreas: [],
+          services: [],
+          portfolioImages: portfolioImages ?? [],
+        };
+      }
+      const serviceAreas = Array.isArray(savedData.serviceAreas)
+        ? savedData.serviceAreas
+        : savedData.serviceArea?.address
+          ? [savedData.serviceArea]
+          : [];
+      return {
+        ...savedData,
+        serviceAreas,
+        portfolioImages: savedData.portfolioImages ?? portfolioImages ?? [],
+      };
+    })(),
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: 'experiences' });
 
-  const onSubmit = async (data) => {
-    await onNext({ ...data, businessLicense, certifications });
+  useEffect(() => {
+    setValue('portfolioImages', portfolioImages ?? [], { shouldValidate: false });
+  }, [portfolioImages, setValue]);
+
+  const handleImagesChange = (imgs) => {
+    setPortfolioImages(imgs);
+    setValue('portfolioImages', imgs, { shouldValidate: true });
   };
+
+  const onSubmit = async (data) => {
+    await onNext({
+      ...data,
+      businessLicense,
+      certifications,
+      portfolioImages: data.portfolioImages ?? portfolioImages ?? [],
+    });
+  };
+
+  const isSubmitting = isFormSubmitting || isSubmittingExternal;
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className='w-full flex-1 min-h-0 flex flex-col gap-5'
     >
-      {/* scrollable content */}
       <div className='flex-1 min-h-0 overflow-y-auto flex flex-col gap-6 pr-1'>
 
-        {/* About */}
         <TextArea
           name='about'
           label='About'
@@ -59,7 +93,6 @@ const ContractorStep2Form = ({
           rows={5}
         />
 
-        {/* Experience */}
         <div className='flex flex-col gap-3'>
           <label className='text-sm font-medium text-gray-700'>Experience</label>
 
@@ -81,7 +114,6 @@ const ContractorStep2Form = ({
             </div>
           ))}
 
-          {/* Add More */}
           <div className='flex justify-end'>
             <button
               type='button'
@@ -99,20 +131,21 @@ const ContractorStep2Form = ({
           )}
         </div>
 
-        {/* Service Areas */}
         <Controller
-          name='serviceArea'
+          name='serviceAreas'
           control={control}
           render={({ field }) => (
             <ServiceAreaInput
               value={field.value}
               onChange={field.onChange}
-              error={errors.serviceArea?.address?.message || errors.serviceArea?.message}
+              error={
+                errors.serviceAreas?.message ||
+                errors.serviceAreas?.[0]?.address?.message
+              }
             />
           )}
         />
 
-        {/* Services */}
         <Controller
           name='services'
           control={control}
@@ -125,7 +158,6 @@ const ContractorStep2Form = ({
           )}
         />
 
-        {/* Verification Documents */}
         <div className='flex flex-col gap-4'>
           <label className='text-sm font-bold text-gray-800'>Verification Documents</label>
 
@@ -142,9 +174,15 @@ const ContractorStep2Form = ({
             onChange={setCertifications}
           />
         </div>
+
+        <MultiImageUpload
+          label='Portfolio Images'
+          value={portfolioImages}
+          onChange={handleImagesChange}
+          error={errors.portfolioImages?.message}
+        />
       </div>
 
-      {/* action buttons */}
       <div className='flex gap-3 shrink-0 mt-2'>
         <button
           type='button'

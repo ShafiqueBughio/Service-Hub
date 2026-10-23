@@ -12,6 +12,7 @@ import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
 import Dropdown from '@/components/ui/Dropdown';
 import ServicesTagInput from '@/components/ui/ServicesTagInput';
+import ServiceAreaInput from '@/components/ui/ServiceAreaInput';
 import { MdAdd, MdDelete, MdUploadFile, MdClose } from 'react-icons/md';
 import { FaUser, FaFilePdf } from 'react-icons/fa';
 
@@ -140,6 +141,7 @@ const page = () => {
 
   // ── State ─────────────────────────────────────────────────────────────────
   const [services,       setServices]       = useState([]);
+  const [serviceAreas,   setServiceAreas]   = useState([]);
   const [avatarFile,     setAvatarFile]     = useState(null);
   const [avatarPreview,  setAvatarPreview]  = useState(null);
   // Business license: single item
@@ -173,6 +175,13 @@ const page = () => {
       }));
       reset({ ...base, about: cp.about || '', experiences: exps });
       setServices((cp.contractor_services ?? []).map((s) => s.service_name));
+      setServiceAreas(
+        (cp.contractor_service_areas ?? []).map((a) => ({
+          address: a.location || '',
+          lat: a.latitude != null && a.latitude !== '' ? Number(a.latitude) : null,
+          lng: a.longitude != null && a.longitude !== '' ? Number(a.longitude) : null,
+        }))
+      );
 
       // Business license
       const bl = documents.find((d) => d.document_type === 'BUSINESS_LICENSE');
@@ -218,6 +227,13 @@ const page = () => {
             company: e.company, designation: e.designation,
             job_type: e.job_type, start_year: e.start_year, end_year: e.end_year || undefined,
           })),
+          service_areas: serviceAreas
+            .filter((a) => a?.address)
+            .map((a) => ({
+              location: a.address,
+              latitude: a.lat != null ? String(a.lat) : '',
+              longitude: a.lng != null ? String(a.lng) : '',
+            })),
           // Always send these so backend knows the final desired state
           business_license: licenseItem
             ? (licenseItem.type === 'existing' ? licenseItem.url : licenseItem.file)
@@ -304,6 +320,15 @@ const page = () => {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <SectionTitle>Services</SectionTitle>
               <ServicesTagInput value={services} onChange={setServices} />
+            </div>
+
+            {/* Service Areas */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <SectionTitle>Service Areas</SectionTitle>
+              <ServiceAreaInput
+                value={serviceAreas}
+                onChange={setServiceAreas}
+              />
             </div>
 
             {/* Experiences */}

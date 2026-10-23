@@ -12,14 +12,13 @@ import Title from '@/components/general/Title';
 import useAuthStore from '@/lib/store/store';
 import useProfileStore from '@/lib/store/profileStore';
 import { useRouter } from 'next/navigation';
+import IdentityVerificationForm from '@/components/identity/IdentityVerificationForm';
 import { CreateUserProfile, CreateContractorProfile } from '@/lib/api/auth';
 import {
   buildUserProfilePayload,
   buildContractorProfilePayload,
 } from '@/lib/profile/helpers';
 import toast from 'react-hot-toast';
-
-const TOTAL_STEPS = 3;
 
 const getErrorMessage = (error) => {
   const msg = error?.response?.data?.message;
@@ -31,6 +30,8 @@ const page = () => {
   const setProfile = useProfileStore((state) => state.setProfile);
   const isContractor = role === 'CONTRACTOR';
   const router = useRouter();
+
+  const TOTAL_STEPS = isContractor ? 3 : 2;
 
   const [isMobile, setIsMobile] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -94,14 +95,15 @@ const page = () => {
     const step1 = { ...data, phone };
     saveStepData(1, step1);
 
-    if (isContractor) {
-      setCurrentStep(2);
-      return;
-    }
+    setCurrentStep(2);
+  };
+
+  const onStep2SubmitUser = async (data) => { 
+    saveStepData(2, data);
 
     setIsSubmittingProfile(true);
     try {
-      const payload = buildUserProfilePayload(data, phone);
+      const payload = buildUserProfilePayload(stepsData.step1, data, phone);
       const response = await CreateUserProfile(payload);
       if (response?.status?.success) {
         handleProfileSuccess(response);
@@ -113,29 +115,35 @@ const page = () => {
     } finally {
       setIsSubmittingProfile(false);
     }
+    
   };
 
   const onStep2Submit = async (data) => {
-    saveStepData(2, { ...data, businessLicense, certifications });
+    saveStepData(2, {
+      ...data,
+      businessLicense,
+      certifications,
+      portfolioImages: data.portfolioImages ?? portfolioImages,
+    });
     setCurrentStep(3);
   };
 
   const onStep3Submit = async (data) => {
-    const step3 = { ...data, portfolioImages };
-    saveStepData(3, step3);
+    saveStepData(3, data);
 
-    const step2WithFiles = {
+    const step2 = {
       ...stepsData.step2,
       businessLicense,
       certifications,
+      portfolioImages: stepsData.step2?.portfolioImages ?? portfolioImages,
     };
 
     setIsSubmittingProfile(true);
     try {
       const payload = buildContractorProfilePayload(
         stepsData.step1,
-        step2WithFiles,
-        step3
+        step2,
+        data
       );
       const response = await CreateContractorProfile(payload);
 
@@ -168,13 +176,12 @@ const page = () => {
 
   const content = (
     <div className='w-full flex-1 min-h-0 flex flex-col gap-5'>
-      {isContractor && (
-        <StepIndicator totalSteps={TOTAL_STEPS} currentStep={currentStep} />
-      )}
+      <StepIndicator totalSteps={TOTAL_STEPS} currentStep={currentStep} />
+
 
       {currentStep === 1 && <CreateProfileForm {...formProps} />}
 
-      {currentStep === 2 && (
+      {currentStep === 2 && isContractor && (
         <ContractorStep2Form
           onBack={() => setCurrentStep(1)}
           onNext={onStep2Submit}
@@ -183,19 +190,31 @@ const page = () => {
           setBusinessLicense={setBusinessLicense}
           certifications={certifications}
           setCertifications={setCertifications}
+          portfolioImages={portfolioImages}
+          setPortfolioImages={setPortfolioImages}
+          isSubmitting={isSubmittingProfile}
         />
       )}
+
+      {currentStep === 2 && !isContractor && (
+       <IdentityVerificationForm
+       onBack={() => setCurrentStep(1)}
+       onSubmit={onStep2SubmitUser}
+       isSubmitting={isSubmittingProfile}
+       defaultValues={stepsData.step2}
+       />
+      )}
+
 
       {currentStep === 3 && (
         <ContractorStep3Form
           onBack={() => setCurrentStep(2)}
           onSubmit={onStep3Submit}
           savedData={stepsData.step3}
-          portfolioImages={portfolioImages}
-          setPortfolioImages={setPortfolioImages}
           isSubmitting={isSubmittingProfile}
         />
       )}
+
     </div>
   );
 
@@ -211,7 +230,7 @@ const page = () => {
 
   return (
     <div className='w-full h-full px-12 flex flex-col gap-6 py-10 min-h-0'>
-      <Title title={currentStep === 3 ? 'Add Portfolio' : 'Create Profile'} />
+      <Title title={currentStep === 3 ? 'Identity Verification' : currentStep === 2 && !isContractor ? 'Identity Verification' : 'Create Profile'} />
       {content}
     </div>
   );

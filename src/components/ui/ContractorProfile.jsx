@@ -1,10 +1,13 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import { MdEdit, MdCheckCircle, MdLocationOn } from 'react-icons/md';
+import { MdEdit, MdCheckCircle } from 'react-icons/md';
 import { FaUser, FaFilePdf } from 'react-icons/fa';
 import { MdChevronRight } from 'react-icons/md';
 import DetailRow from './DetailRow';
+import { MdVerifiedUser } from "react-icons/md";
+
+const ServiceAreasDisplayMap = lazy(() => import('./ServiceAreasDisplayMap'));
 
 // ─── Section title ────────────────────────────────────────────────────────────
 const SectionTitle = ({ children }) => (
@@ -56,38 +59,6 @@ const DocTile = ({ url, label }) => {
   );
 };
 
-// ─── Simple map placeholder (shows location pin on OSM) ──────────────────────
-const ServiceAreaMap = ({ area }) => {
-  if (!area) return null;
-  const lat = area.latitude;
-  const lng = area.longitude;
-  const hasCoords = lat && lng;
-
-  return (
-    <div className="mb-3">
-      {hasCoords ? (
-        <div className="w-full h-40 rounded-xl overflow-hidden border border-gray-200">
-          <iframe
-            title="service-area"
-            width="100%"
-            height="100%"
-            loading="lazy"
-            src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(lng) - 0.05},${Number(lat) - 0.05},${Number(lng) + 0.05},${Number(lat) + 0.05}&layer=mapnik&marker=${lat},${lng}`}
-            className="w-full h-full"
-          />
-        </div>
-      ) : (
-        <div className="w-full h-40 rounded-xl bg-gray-100 flex items-center justify-center">
-          <MdLocationOn size={32} className="text-gray-300" />
-        </div>
-      )}
-      <div className="flex items-center justify-between mt-2">
-        <p className="text-sm text-gray-600">{area.location || '—'}</p>
-      </div>
-    </div>
-  );
-};
-
 // ─── Main ContractorProfile component ────────────────────────────────────────
 const ContractorProfile = ({ profileData, contractorData }) => {
   const router = useRouter();
@@ -135,7 +106,7 @@ const ContractorProfile = ({ profileData, contractorData }) => {
         <div className="flex items-center gap-2 justify-center">
           <h2 className="text-base sm:text-lg font-bold text-gray-900">{profileData?.fullName || '—'}</h2>
           {profileData?.emailVerified && (
-            <MdCheckCircle size={18} className="text-green-500 shrink-0" />
+            <MdVerifiedUser size={20} className="text-green-500 shrink-0" />
           )}
         </div>
         {(profileData?.city || profileData?.state) && (
@@ -225,13 +196,17 @@ const ContractorProfile = ({ profileData, contractorData }) => {
         </div>
       )}
 
-      {/* ── Service Areas ── */}
+      {/* ── Service Areas — one map, multiple pins ── */}
       {serviceAreas.length > 0 && (
         <div>
-          <SectionTitle>Services Area</SectionTitle>
-          {serviceAreas.map((area) => (
-            <ServiceAreaMap key={area.id} area={area} />
-          ))}
+          <SectionTitle>Service Areas</SectionTitle>
+          <Suspense
+            fallback={
+              <div className="w-full h-52 rounded-xl bg-gray-100 animate-pulse" />
+            }
+          >
+            <ServiceAreasDisplayMap areas={serviceAreas} />
+          </Suspense>
         </div>
       )}
 

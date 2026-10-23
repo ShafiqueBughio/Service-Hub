@@ -65,24 +65,50 @@ export const contractorStep2Schema = yup.object({
     })
   ).min(1, 'Add at least one experience'),
 
-  serviceArea: yup.object({
-    address: yup.string().required('Service area is required'),
-    lat: yup.number().nullable(),
-    lng: yup.number().nullable(),
-  }).required('Service area is required'),
+  serviceAreas: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Service area address is required'),
+        lat: yup.number().nullable(),
+        lng: yup.number().nullable(),
+      })
+    )
+    .min(1, 'Add at least one service area')
+    .required('Service area is required'),
 
   services: yup
     .array()
     .of(yup.string())
     .min(1, 'Add at least one service'),
-});
 
-export const contractorStep3Schema = yup.object({
   portfolioImages: yup
     .array()
     .min(1, 'Please upload at least one portfolio image')
     .required('Portfolio images are required'),
 });
+
+const isIdentityFile = (value) =>
+  value instanceof File ||
+  value instanceof Blob ||
+  typeof value === "string" ||
+  value?.file instanceof File;
+
+export const identityVerificationSchema = yup.object({
+  cnic_front: yup
+    .mixed()
+    .required("CNIC front is required")
+    .test("cnic-front-file", "CNIC front is required", isIdentityFile),
+  cnic_back: yup
+    .mixed()
+    .required("CNIC back is required")
+    .test("cnic-back-file", "CNIC back is required", isIdentityFile),
+  selfie: yup
+    .mixed()
+    .required("Live selfie is required")
+    .test("selfie-file", "Live selfie is required", isIdentityFile),
+});
+
 
 export const forgotPasswordSchema = yup.object({
   email: yup

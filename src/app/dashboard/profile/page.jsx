@@ -6,9 +6,11 @@ import PageHeader from "@/components/general/PageHeader";
 import UserProfile from "@/components/ui/UserProfile";
 import ContractorProfile from "@/components/ui/ContractorProfile";
 
+
 // ─── Shared helper — derives common display fields from profile ───────────────
 const getProfileData = (profile) => {
   const details = profile?.user_details;
+  const identity_verification_details = profile?.identity_verification;
   const firstName = details?.first_name || "";
   const lastName = details?.last_name || "";
 
@@ -26,8 +28,11 @@ const getProfileData = (profile) => {
     profilePicture: details?.profile_picture || null,
     emailVerified: !!profile?.is_email_verified,
     phoneVerified: !!profile?.is_phone_verified,
+    rejection_reason : identity_verification_details?.rejection_reason,
+    verification_status : identity_verification_details?.verification_status,
   };
 };
+
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 const Page = () => {

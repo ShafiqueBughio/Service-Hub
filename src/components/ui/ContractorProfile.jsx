@@ -6,6 +6,7 @@ import { FaUser, FaFilePdf } from 'react-icons/fa';
 import { MdChevronRight } from 'react-icons/md';
 import DetailRow from './DetailRow';
 import { MdVerifiedUser } from "react-icons/md";
+import VerificationBadge from './VerificationBadge';
 
 const ServiceAreasDisplayMap = lazy(() => import('./ServiceAreasDisplayMap'));
 
@@ -61,18 +62,19 @@ const DocTile = ({ url, label }) => {
 
 // ─── Main ContractorProfile component ────────────────────────────────────────
 const ContractorProfile = ({ profileData, contractorData }) => {
+  const verificationStatus = profileData?.verification_status ?? "NOT_SUBMITTED";
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(null); // 'services' | 'portfolio'
 
   const cp = contractorData ?? {};
-  const experiences  = cp.contractor_experiences  ?? [];
-  const services     = cp.contractor_services     ?? [];
+  const experiences = cp.contractor_experiences ?? [];
+  const services = cp.contractor_services ?? [];
   const serviceAreas = cp.contractor_service_areas ?? [];
-  const documents    = cp.contractor_documents    ?? [];
-  const portfolios   = cp.contractor_portfolios   ?? [];
+  const documents = cp.contractor_documents ?? [];
+  const portfolios = cp.contractor_portfolios ?? [];
 
   const businessLicense = documents.find((d) => d.document_type === 'BUSINESS_LICENSE');
-  const certifications  = documents.filter((d) => d.document_type === 'CERTIFICATION');
+  const certifications = documents.filter((d) => d.document_type === 'CERTIFICATION');
 
   return (
     <div className="w-full h-full overflow-y-auto bg-white rounded-md p-3 sm:p-4 flex flex-col gap-5">
@@ -103,17 +105,25 @@ const ContractorProfile = ({ profileData, contractorData }) => {
         </div>
 
         {/* Name + verified + location */}
-        <div className="flex items-center gap-2 justify-center">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900">{profileData?.fullName || '—'}</h2>
-          {profileData?.emailVerified && (
-            <MdVerifiedUser size={20} className="text-green-500 shrink-0" />
+        <div className='flex flex-col justify-center items-center '>
+          <div className="flex items-center gap-2 justify-center">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900">{profileData?.fullName || '—'}</h2>
+            {verificationStatus === "VERIFIED" && (
+              <MdVerifiedUser size={20} className="text-green-500 shrink-0" />
+            )}
+          </div>
+          {(profileData?.city || profileData?.state) && (
+            <p className="text-sm text-gray-400">
+              {[profileData.city, profileData.state].filter(Boolean).join(', ')}
+            </p>
           )}
+
+          <VerificationBadge
+            handleClick={() => router.push(`/dashboard/profile/verification?status=${verificationStatus}`)}
+            status={verificationStatus}
+            className='cursor-pointer' />
         </div>
-        {(profileData?.city || profileData?.state) && (
-          <p className="text-sm text-gray-400">
-            {[profileData.city, profileData.state].filter(Boolean).join(', ')}
-          </p>
-        )}
+
       </div>
 
       {/* ── Quick-action tabs ── */}

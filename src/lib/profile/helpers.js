@@ -6,20 +6,26 @@ export const toApiGender = (gender) => {
   return normalized;
 };
 
-export const buildUserProfilePayload = (data,stepData, phone) => ({
+export const buildUserProfilePayload = (data, stepData, phone) => ({
   first_name: data.firstName,
   last_name: data.lastName,
   address: data.address,
   city: data.city,
   state: data.state,
   contact_phone: phone,
-  contact_email : data.email,
+  contact_email: data.email,
   gender: toApiGender(data.gender),
   profile_picture: data.profileImage ?? null,
   cnic_front: toUploadFile(stepData?.cnic_front),
-    cnic_back: toUploadFile(stepData?.cnic_back),
-    selfie: toUploadFile(stepData?.selfie),
+  cnic_back: toUploadFile(stepData?.cnic_back),
+  selfie: toUploadFile(stepData?.selfie),
 });
+
+export const buildIdentityVerificationPayload = (data) => ({
+  cnic_front: toUploadFile(data?.cnic_front),
+  cnic_back: toUploadFile(data?.cnic_back),
+  selfie: toUploadFile(data?.selfie),
+})
 
 const mapExperiencesToApi = (experiences = []) =>
   experiences.map((exp) => ({
@@ -74,6 +80,8 @@ export const buildContractorProfilePayload = (step1, step2, step3) => {
     certifications,
     portfolio_images:
       step2?.portfolioImages ?? step3?.portfolioImages ?? [],
-    
+
   };
+
+
 };

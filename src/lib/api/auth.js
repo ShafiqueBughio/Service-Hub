@@ -130,5 +130,30 @@ export const getSocialLogin = async(payload)=>{
   return response.data;
 }
 
+export const makeIdentityVerification = async(payload)=>{
+   const formData = buildProfileFormData(payload);
+  const response = await api.post("/user/identity_verification", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+}
+
+//get Identity verification details 
+export const getIdentityVerificationDetails = async()=>{
+  const response = await api.get("/user/get_identity_verification_details");
+  return response?.data;
+}
+
+//update identity verification details
+export const updateIdentityVerification = async(payload)=>{
+   const formData = buildProfileFormData(payload);
+  const response = await api.patch("/user/update_identity_verification", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+}
+
+
+
 
 export { default as api } from "@/lib/api/client";

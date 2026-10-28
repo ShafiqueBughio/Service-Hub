@@ -25,6 +25,7 @@ const LiveSelfieCapture = ({
   value,
   onChange,
   error,
+  mode = "auth"
 }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -32,6 +33,7 @@ const LiveSelfieCapture = ({
   const animationRef = useRef(null);
   const stableFramesRef = useRef(0);
   const lastVideoTimeRef = useRef(-1);
+  const lastDetectionTimeRef = useRef(0); //added
   const lastPromptRef = useRef("");
 
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -165,13 +167,29 @@ const LiveSelfieCapture = ({
             return;
           }
 
+          //added
+          const now = performance.now();
+
+          if (now - lastDetectionTimeRef.current < 100) {
+            animationRef.current = requestAnimationFrame(detectFrame);
+            return;
+          }
+
           if (currentVideo.currentTime !== lastVideoTimeRef.current) {
             lastVideoTimeRef.current = currentVideo.currentTime;
+            lastDetectionTimeRef.current = now; //added
 
             try {
+              //added
+              if (cancelled || faceLandmarkerRef.current !== detector) {
+                if (!cancelled) {
+                  animationRef.current = requestAnimationFrame(detectFrame);
+                }
+                return;
+              }
               const result = detector.detectForVideo(
                 currentVideo,
-                performance.now()
+                now
               );
 
               const faces = result.faceLandmarks || [];
@@ -279,7 +297,19 @@ const LiveSelfieCapture = ({
                 }
               }
             } catch (err) {
-              console.error("Face detection frame failed:", err);
+              console.error("Face detection failed:", err);
+              console.error("Error name:", err?.name);
+              console.error("Error message:", err?.message);
+
+              setCameraError(
+                err?.message ||
+                "Face detection failed. Please close the camera and try again."
+              );
+
+              setStarting(false);
+              setModelLoading(false);
+
+              return;
             }
           }
 
@@ -389,12 +419,12 @@ const LiveSelfieCapture = ({
   };
 
   const isCaptureReady =
-  !starting &&
-  !modelLoading &&
-  !capturing &&
-  !cameraError &&
-  faceReady &&
-  faceCount === 1;
+    !starting &&
+    !modelLoading &&
+    !capturing &&
+    !cameraError &&
+    faceReady &&
+    faceCount === 1;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -402,18 +432,20 @@ const LiveSelfieCapture = ({
         <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
 
-      <p className="text-md text-gray-400 -mt-0.5">
-        Live camera only — gallery or file upload is not allowed.
-      </p>
+      {
+        mode === "auth" &&
+        <p className="text-md text-gray-400 -mt-0.5">
+          Live camera only — gallery or file upload is not allowed.
+        </p>
+      }
 
       <button
         type="button"
         onClick={() => setCameraOpen(true)}
-        className={`relative w-full aspect-[4/3] max-h-64 border-2 border-dashed rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-2 transition-colors ${
-          error
-            ? "border-red-400 bg-red-50"
-            : "border-primary/40 bg-blue-50 hover:bg-blue-100"
-        }`}
+        className={`relative w-full aspect-[4/3] max-h-64 border-2 border-dashed rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-2 transition-colors ${error
+          ? "border-red-400 bg-red-50"
+          : "border-primary/40 bg-blue-50 hover:bg-blue-100"
+          }`}
       >
         {preview ? (
           <>
@@ -469,13 +501,12 @@ const LiveSelfieCapture = ({
               {/* Oval face-position guide */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div
-                  className={`w-[60%] h-[60%] rounded-[50%] border-[3px] transition-colors duration-200 ${
-                    faceReady
-                      ? "border-green-400"
-                      : faceCount > 1
+                  className={`w-[60%] h-[60%] rounded-[50%] border-[3px] transition-colors duration-200 ${faceReady
+                    ? "border-green-400"
+                    : faceCount > 1
                       ? "border-red-400"
                       : "border-white/80"
-                  }`}
+                    }`}
                   style={{
                     boxShadow: "0 0 0 999px rgba(0,0,0,0.28)",
                   }}
@@ -483,11 +514,10 @@ const LiveSelfieCapture = ({
               </div>
 
               <div
-                className={`absolute top-4 left-3 right-3 text-center text-sm font-semibold px-3 py-2 rounded-xl ${
-                  faceReady
-                    ? "bg-green-600/90 text-white"
-                    : "bg-black/65 text-white"
-                }`}
+                className={`absolute top-4 left-3 right-3 text-center text-sm font-semibold px-3 py-2 rounded-xl ${faceReady
+                  ? "bg-green-600/90 text-white"
+                  : "bg-black/65 text-white"
+                  }`}
               >
                 {modelLoading
                   ? "Loading face detector..."

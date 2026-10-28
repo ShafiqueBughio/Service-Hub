@@ -47,7 +47,7 @@ const IdentityDocUpload = ({
       )}
 
       <div
-        className={`relative w-full aspect-[3/2] border-2 border-dashed rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-2 transition-colors
+        className={`relative w-full aspect-[3/2] h-36 border-2 border-dashed rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-2 transition-colors
           ${error ? "border-red-400 bg-red-50" : "border-primary/40 bg-blue-50"}
         `}
       >

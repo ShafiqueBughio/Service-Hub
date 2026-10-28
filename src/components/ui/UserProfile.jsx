@@ -3,10 +3,14 @@ import { MdEdit } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import DetailRow from './DetailRow';
 import { useRouter } from 'next/navigation';
+import { MdVerifiedUser } from "react-icons/md";
+import VerificationBadge from './VerificationBadge';
 
 
-const UserProfile = ({detailRows,profileData}) => {
+const UserProfile = ({ detailRows, profileData }) => {
     const router = useRouter();
+    const verificationStatus = profileData?.verification_status ?? "NOT_SUBMITTED";
+
     return (
         <div className="w-full h-full overflow-y-auto bg-white rounded-md p-3 sm:p-4">
             <div className="w-full ">
@@ -96,18 +100,23 @@ const UserProfile = ({detailRows,profileData}) => {
                         </div>
 
                         {/* Name + Email */}
-                        <div className="max-w-full px-2">
-                            <h2
-                                className="
+                        <div className="w-full flex flex-col justify-center items-center">
+                            <div className='flex items-center gap-2 justify-center'>
+                                <h2
+                                    className="
                         text-base
                         sm:text-lg
                         font-bold
                         text-gray-900
                         break-words
                       "
-                            >
-                                {profileData?.fullName}
-                            </h2>
+                                >
+                                    {profileData?.fullName}
+                                </h2>
+                                {verificationStatus === "VERIFIED" && (
+                                    <MdVerifiedUser size={20} className="text-green-500 shrink-0" />
+                                )}
+                            </div>
 
                             <p
                                 className="
@@ -119,6 +128,10 @@ const UserProfile = ({detailRows,profileData}) => {
                             >
                                 {profileData?.email}
                             </p>
+                            <VerificationBadge
+                                handleClick={() => router.push(`/dashboard/profile/verification?status=${verificationStatus}`)}
+                                status={verificationStatus}
+                                className='cursor-pointer' />
                         </div>
                     </div>
                 </div>

@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { MdNotifications, MdChat, MdLocationOn, MdKeyboardArrowDown } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import useProfileStore from '@/lib/store/profileStore';
-import useAuthStore from '@/lib/store/store';
+import useNotificationStore from '@/lib/store/notificationStore';
 
 const Navbar = ({ toggle, setToggle }) => {
   const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
-  const { unreadCount } = useAuthStore();
+  const { unreadCount } = useNotificationStore();
   const [location, setLocation] = useState('Fetching location...');
 
   // Derive display name and email from profile

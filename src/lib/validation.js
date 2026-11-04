@@ -193,6 +193,19 @@ export const editContractorProfileSchema = yup.object({
   })).optional(),
 });
 
+export const createJobSchema = yup.object({
+  job_type:             yup.string().oneOf(['REGULAR', 'LIVE']).required('Job type is required'),
+  title:                yup.string().trim().min(5).max(100).required('Project title is required'),
+  description:          yup.string().trim().min(10).required('Description is required'),
+  expire_days:          yup.number().oneOf([1, 3, 5, 7], 'Select a valid expiry').required('Expiry is required'),
+  min_budget:           yup.number().typeError('Enter a valid number').min(0, 'Must be ≥ 0').required('Min budget is required'),
+  max_budget:           yup.number().typeError('Enter a valid number').min(0, 'Must be ≥ 0').required('Max budget is required'),
+  timeline:             yup.string().trim().max(500).optional(),
+  location:             yup.string().max(500).optional(),
+  provider_preferences: yup.array().of(yup.string().trim()).optional().default([]),
+  attachments : yup.array().optional()
+});
+
 export const reportIssueSchema = yup.object({
   Subject : yup.string().required("Subject is required").max(100,"Subject must be maximum of 100 characters"),
 

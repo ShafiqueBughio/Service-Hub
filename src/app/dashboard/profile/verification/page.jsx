@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Profiler, useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
@@ -134,32 +134,6 @@ const getErrorMessage = (error) => {
     : message || "Something went wrong";
 };
 
-// Accept File objects from the upload modal.
-// Existing string URLs are preserved as strings.
-const toUploadFile = (value) => {
-  if (!value) return null;
-
-  if (typeof File !== "undefined" && value instanceof File) {
-    return value;
-  }
-
-  if (typeof Blob !== "undefined" && value instanceof Blob) {
-    return value;
-  }
-
-  if (
-    typeof File !== "undefined" &&
-    value.file instanceof File
-  ) {
-    return value.file;
-  }
-
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return null;
-};
 
 // --------------------------------------------------
 // 4. Reusable detail row

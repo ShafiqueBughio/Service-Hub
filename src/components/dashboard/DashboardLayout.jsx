@@ -6,15 +6,18 @@ import { Toaster } from 'react-hot-toast';
 import { getUserProfile, getUnreadCount } from '@/lib/api/auth';
 import useProfileStore from '@/lib/store/profileStore';
 import Notification from '../ui/Notification';
-import useAuthStore from '@/lib/store/store';
+import useNotificationStore from '@/lib/store/notificationStore';
+import useTokenStore from '@/lib/store/tokenStore';
+import { connectSocket, disconnectSocket } from '@/lib/socket/socketService';
 
 const DashboardLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile]       = useState(false);
   const [toggle, setToggle]           = useState(false);
 
-  const setProfile    = useProfileStore((state) => state.setProfile);
-  const setUnreadCount = useAuthStore((state) => state.setUnreadCount);
+  const setProfile      = useProfileStore((state) => state.setProfile);
+  const { setUnreadCount, addNotification } = useNotificationStore();
+  const accessToken     = useTokenStore((state) => state.accessToken);
 
   // Fetch user profile once on mount
   useEffect(() => {
@@ -29,8 +32,7 @@ const DashboardLayout = ({ children }) => {
     fetchProfile();
   }, []);
 
-  // Fetch global unread count on mount — used by Navbar badge
-  // Independent of any date range, reflects all unread notifications
+  // Fetch global unread count on mount
   useEffect(() => {
     const fetchCount = async () => {
       try {
@@ -39,10 +41,41 @@ const DashboardLayout = ({ children }) => {
           setUnreadCount(res.data?.unread_count ?? 0);
         }
       } catch {
-        // badge silently fails — not critical
+        // badge silently fails
       }
     };
     fetchCount();
+  }, []);
+
+  // Connect socket and listen for real-time notifications
+  useEffect(() => {
+    if (!accessToken) return;
+
+    const socket = connectSocket(accessToken);
+
+    const handleNewNotification = (notification) => {
+      console.log('[Socket] new_notification received:', notification);
+      // addNotification deduplicates by id automatically
+      const added = addNotification(notification);
+      if (added) {
+        // unreadCount already incremented inside addNotification if is_read=false
+        // so nothing extra needed here
+        console.log('[Socket] Notification added to store:', notification.title);
+      }
+    };
+
+    socket.on('new_notification', handleNewNotification);
+
+    return () => {
+      socket.off('new_notification', handleNewNotification);
+    };
+  }, [accessToken]);
+
+  // Disconnect socket on unmount (logout/navigate away from dashboard)
+  useEffect(() => {
+    return () => {
+      disconnectSocket();
+    };
   }, []);
 
   useEffect(() => {

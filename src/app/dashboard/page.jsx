@@ -1,7 +1,10 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import StatCard from '@/components/dashboard/StatCard';
 import useProfileStore from '@/lib/store/profileStore';
+import { IoAddOutline } from "react-icons/io5";
+import useAuthStore from '@/lib/store/store';
+import CreateJobModal from '@/components/Job/CreateJobModal';
 
 
 const stats = [
@@ -12,16 +15,23 @@ const stats = [
 ];
 
 const page = () => {
+  const [openJobModal,setOpenJobModal] = useState(false);
   const profile = useProfileStore((state) => state.profile);
 
-  console.log(profile,"Profile")
+  const {role} = useAuthStore();
+
+  const handleCloseJobModal = ()=>{
+    setOpenJobModal(false);
+  }
+
+  console.log(profile, "Profile")
   const displayName =
     profile?.full_name ||
     [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') ||
     'there';
 
   return (
-    <>
+    <div>
       {/* welcome */}
       <div className='mb-6'>
         <p className='text-sm text-gray-500'>Welcome back, {displayName}!</p>
@@ -44,7 +54,26 @@ const page = () => {
           <p className='text-gray-400 text-sm'>Calendar coming soon</p>
         </div>
       </div>
-    </>
+      {/* Add Job Floating Button */}
+      {
+        role === "USER" && (
+      <button
+        type="button"
+        onClick={()=>setOpenJobModal(true)}
+        title='Add Job'
+        className="fixed bottom-8 right-8 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all duration-200 hover:bg-secondary hover:scale-105 cursor-pointer"
+        aria-label="Add Job"
+      >
+        <IoAddOutline size={28} />
+      </button>
+        )
+      }
+      {
+         openJobModal && (
+          <CreateJobModal onClose={handleCloseJobModal}/>
+        )
+      }
+    </div>
   );
 };
 

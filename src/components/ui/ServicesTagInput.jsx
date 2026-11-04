@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { IoAdd } from 'react-icons/io5';
 
-const ServicesTagInput = ({ value = [], onChange, error }) => {
+const ServicesTagInput = ({ value = [], onChange, error,label = "Services",placeholder = "Enter Services" }) => {
   const [input, setInput] = useState('');
 
   const addService = () => {
@@ -25,13 +25,13 @@ const ServicesTagInput = ({ value = [], onChange, error }) => {
 
   return (
     <div className='flex flex-col gap-2'>
-      <label className='text-sm font-medium text-gray-700'>Services</label>
+      <label className='text-sm font-medium text-gray-700'>{label}</label>
 
       {/* input + add button */}
       <div className='flex items-center gap-2'>
         <input
           type='text'
-          placeholder='Enter Services'
+          placeholder={placeholder}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}

@@ -86,3 +86,43 @@ export const buildProfileFormData = (payload) => {
 
   return formData;
 };
+
+/**
+ * Build FormData for job create/edit.
+ * - Scalar fields → appended as strings
+ * - Arrays/objects (non-file) → JSON.stringify
+ * - `attachments` field: existing { url, type } objects → JSON array,
+ *   new File objects → binary under 'attachments' field (multer picks them up)
+ */
+export const buildJobFormData = (payload) => {
+  const formData = new FormData();
+  const { attachments, ...rest } = payload;
+
+  // Scalar and object fields
+  Object.entries(rest).forEach(([key, value]) => {
+    if (value == null || value === '') return;
+    if (value instanceof File) { formData.append(key, value); return; }
+    if (Array.isArray(value) || typeof value === 'object') {
+      formData.append(key, JSON.stringify(value));
+    } else {      formData.append(key, String(value));
+    }
+  });
+
+  // Attachments — split existing URLs from new File objects
+  if (attachments !== undefined) {
+    const items       = Array.isArray(attachments) ? attachments : [];
+    const existingURLs = items.filter((a) => typeof a?.url === 'string' && !a?.url?.startsWith('blob:'));
+    const newFiles     = items
+      .map((a) => a instanceof File ? a : a?.file)
+      .filter((f) => f instanceof File);
+
+    // Send existing as JSON (backend merges them)
+    formData.append('attachments', JSON.stringify(existingURLs));
+
+    // Send new files as binary under 'attachments' — multer + upload_media handles them
+    newFiles.forEach((file) => formData.append('attachments', file));
+  }
+
+  return formData;
+};
+

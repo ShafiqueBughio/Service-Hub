@@ -201,7 +201,14 @@ export const createJobSchema = yup.object({
   min_budget:           yup.number().typeError('Enter a valid number').min(0, 'Must be ≥ 0').required('Min budget is required'),
   max_budget:           yup.number().typeError('Enter a valid number').min(0, 'Must be ≥ 0').required('Max budget is required'),
   timeline:             yup.string().trim().max(500).optional(),
-  location:             yup.string().max(500).optional(),
+  location: yup
+    .object({
+      loc: yup.string().required('Location is required'),
+      latitude: yup.string().required(),
+      longitude: yup.string().required(),
+    })
+    .nullable()
+    .optional(),
   provider_preferences: yup.array().of(yup.string().trim()).optional().default([]),
   attachments : yup.array().optional()
 });

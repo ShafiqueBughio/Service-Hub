@@ -5,6 +5,8 @@ import useProfileStore from '@/lib/store/profileStore';
 import { IoAddOutline } from "react-icons/io5";
 import useAuthStore from '@/lib/store/store';
 import CreateJobModal from '@/components/Job/CreateJobModal';
+import { createJob } from '@/lib/api/dashboard';
+import toast from 'react-hot-toast';
 
 
 const stats = [
@@ -24,7 +26,45 @@ const page = () => {
     setOpenJobModal(false);
   }
 
-  console.log(profile, "Profile")
+  // ─── Helper: map File MIME to API type ────────────────────────────────────────
+  const mimeToType = (file) => {
+    if (!file?.type)                       return 'file';
+    if (file.type.startsWith('image/'))    return 'image';
+    if (file.type.startsWith('video/'))    return 'video';
+    if (file.type === 'application/pdf')   return 'pdf';
+    return 'file';
+  };
+
+   const handleCreateJob = async (data) => {
+      try {
+        const payload = {
+          job_type:    data.job_type,
+          title:       data.title,
+          description: data.description,
+          expire_days: data.expire_days,
+          min_budget:  Number(data.min_budget),
+          max_budget:  Number(data.max_budget),
+          ...(data.timeline                     && { timeline: data.timeline }),
+          ...(data.location                     && { location: data.location }),
+          ...(data.provider_preferences?.length && { provider_preferences: data.provider_preferences }),
+          // Pass raw attachment items — buildJobFormData separates Files from URLs
+          attachments: data.attachments ?? [],
+        };
+  
+        const res = await createJob(payload);
+  
+        if(res?.status?.success){
+        toast.success('Job posted successfully!');
+        handleCloseJobModal()
+        }else{
+          toast.error(res?.message);
+        }
+      } catch (error) {
+        const msg = error?.response?.data?.message;
+        toast.error(Array.isArray(msg) ? msg.join(', ') : msg || 'Something went wrong');
+      }
+    };
+
   const displayName =
     profile?.full_name ||
     [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') ||
@@ -70,7 +110,11 @@ const page = () => {
       }
       {
          openJobModal && (
-          <CreateJobModal onClose={handleCloseJobModal}/>
+          <CreateJobModal 
+          onClose={handleCloseJobModal}
+           onSubmit={handleCreateJob}
+            mode='create'
+            />
         )
       }
     </div>
